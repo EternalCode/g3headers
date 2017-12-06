@@ -325,6 +325,12 @@ POKEAGB_EXTERN u8 special_is_finished(void);
 POKEAGB_EXTERN void select_pokemon_launch(u8, u8, u8, u8, u8, SuperCallback);
 
 /**
+ * Resume script execution after waitstate
+ * @address{BPRE,08069B34}
+ */
+POKEAGB_EXTERN void script_env_2_enable_and_set_ctx_running(void);
+
+/**
  * Trades Pokemon in slot indicated by var 08004, with opponent's first slot pkmn.
  * @address{BPRE,08054440}
  */

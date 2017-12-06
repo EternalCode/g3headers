@@ -166,10 +166,10 @@ enum Sound  {
 POKEAGB_EXTERN void audio_play(enum Sound sound);
 
 /**
- * Set mono/stereo mode
- * @address{BPRE,081DE7D4}
+ * change music for battle.
+ * @address{BPRE,08044090}
  */
-POKEAGB_EXTERN void audio_set_mono(bool enable);
+POKEAGB_EXTERN void current_map_music_set__default_for_battle(u16);
 
 POKEAGB_END_DECL
 

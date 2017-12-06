@@ -45,7 +45,7 @@ union Color {
 /**
  * @address{BPRE,02037AB8}
  */
-extern struct FadeControl pal_fade_control;
+struct FadeControl pal_fade_control;
 
 /**
  * @address{BPRE,08150408}
@@ -55,12 +55,12 @@ POKEAGB_EXTERN u8* stdpal_get(u8 id);
 /**
  * @address{BPRE,03003E58}
  */
-extern u8* gpu_pal_tag_search_lower_boundary;
+u8* gpu_pal_tag_search_lower_boundary;
 
 /**
  * @address{BPRE,080703EC}
  */
-POKEAGB_EXTERN void gpu_pal_apply(const void* palette, u16 offset, u16 size);
+POKEAGB_EXTERN void gpu_pal_apply(void* palette, u16 offset, u16 size);
 
 /**
  * @address{BPRE,080703A8}
@@ -103,10 +103,8 @@ POKEAGB_EXTERN void process_palfade(void);
 POKEAGB_EXTERN void gpu_pal_allocator_reset(void);
 
 /**
- * ZeroFills PAL RAM
  * @address{BPRE,0807DC00}
  */
 POKEAGB_EXTERN void pal_fill_black(void);
 
-  
 #endif /* POKEAGB_GRAPHICS_PALETTE_H_ */

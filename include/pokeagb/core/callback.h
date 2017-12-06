@@ -33,11 +33,6 @@ enum Keypad {
     KEY_DPAD = (KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT),
 };
 
-/**
- * Check the if the all the given keys are pressed
- */
-#define KEYS_ALL_PRESSED(x, keys) (((x) & (keys)) == (keys))
-
 struct Superstate {
     SuperCallback callback1;
     SuperCallback callback2;
