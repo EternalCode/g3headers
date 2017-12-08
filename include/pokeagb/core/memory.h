@@ -14,6 +14,13 @@
 POKEAGB_BEGIN_DECL
 
 /**
+ * Inititializes malloc structure and memory sector is picked
+ *
+ * @address{BPRE,08002B80}
+ */
+POKEAGB_EXTERN void malloc_init(void* mem_start, u32 mem_size);
+
+/**
  * Allocates a block of size bytes of memory, returning a pointer to the beginning of the block.
  *
  * @address{BPRE,08002B9C}
