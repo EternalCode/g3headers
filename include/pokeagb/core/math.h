@@ -16,5 +16,12 @@
    get the position of the array member y is in. */
 #define GET_SLOT_FROM_PTR(x, y, z) ((y - x) / z)
 
+/**
+ * Background Music Player.
+ * @address{BPRE,03007300}
+ */
+extern u16 sin_angles[512];
+
+
 #endif /* POKEAGB_MATH_H_ */
 
