@@ -20,7 +20,7 @@
  * Background Music Player.
  * @address{BPRE,03007300}
  */
-extern u16 sin_angles[512];
+extern s16 sin_angles[512];
 
 
 #endif /* POKEAGB_MATH_H_ */
