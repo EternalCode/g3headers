@@ -297,7 +297,7 @@ POKEAGB_EXTERN void oac_pingpong(struct Object*);
 POKEAGB_EXTERN s16 get_pingpong(s16 phase, u16 scale);
 
 /**
- * reset affine
+ * Reset affine. This doesn't reset the rotscale tables
  * @address{BPRE,08007390}
  */
 POKEAGB_EXTERN void affine_reset_all(void);
@@ -315,10 +315,16 @@ POKEAGB_EXTERN void obj_apply_bldpalfade(u32, s16, s16, s16, u32);
 POKEAGB_EXTERN void obj_id_set_rotscale(u8 objid, u32 pa, u32 pb, u32 pc, u32 pd);
 
 /**
+ * reset rotscale entries for all
+ * @address{BPRE,08008560}
+ */
+POKEAGB_EXTERN void rotscale_reset(void);
+
+/**
  * set oam animation start
  * @address{BPRE,0800838C}
  */
-POKEAGB_EXTERN void obj_anim_image_start(struct Object* obj, u8 animation_num);
+POKEAGB_EXTERN void obj_anim_image_start(void);
 
 POKEAGB_END_DECL
 
