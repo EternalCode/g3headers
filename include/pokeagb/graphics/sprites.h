@@ -321,6 +321,12 @@ POKEAGB_EXTERN void obj_id_set_rotscale(u8 objid, u32 pa, u32 pb, u32 pc, u32 pd
 POKEAGB_EXTERN void rotscale_reset(void);
 
 /**
+ * Resets the rotscale animation for an object and starts the animation from the specified rotscale table index 
+ * @address{BPRE,0800843C}
+ */
+POKEAGB_EXTERN void obj_rotscale_play(struct Object* obj, u8 table_index);
+
+/**
  * set oam animation start
  * @address{BPRE,0800838C}
  */
