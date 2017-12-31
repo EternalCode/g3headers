@@ -54,6 +54,11 @@ POKEAGB_EXTERN void gpu_tile_bg_drop_all_sets(u8);
 POKEAGB_EXTERN void tilemaps_sync(void);
 
 /**
+ * @address{BPRE,08002008}
+ */
+POKEAGB_EXTERN void* bgid_get_tilemap(u8 bgid);
+
+/**
  * @address{BPRE,0812D594}
  */
 POKEAGB_EXTERN void bg_positions_reset(void);
