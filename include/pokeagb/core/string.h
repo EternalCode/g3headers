@@ -7,11 +7,11 @@
 #define POKEAGB_CORE_STRING_H_
 
 #include <pokeagb/types.h>
+#include "task.h"
 
 POKEAGB_BEGIN_DECL
 
 typedef u8 pchar;
-
 struct Textbox {
     u8 bg_id;
     u8 x;
@@ -207,11 +207,11 @@ POKEAGB_EXTERN void rboxes_free(void);
 /**
  * @address{BPRE,08002DE8}
  */
-POKEAGB_EXTERN void remoboxes_upload_tilesets();
+POKEAGB_EXTERN void RunTextPrinters();
 
 /**
  * creates new rbox using string. Rbox tiles address returned, and
- * rboxid written to buffer. 
+ * rboxid written to buffer.
  * @address{BPRE,0804A648}
  */
 POKEAGB_EXTERN u32 write_to_rbox(pchar* string, u8 unk, u8 unk2, u8* rboxid_buffer);
@@ -223,12 +223,6 @@ POKEAGB_EXTERN u32 write_to_rbox(pchar* string, u8 unk, u8 unk2, u8* rboxid_buff
 POKEAGB_EXTERN u8 rbox_to_vram(void* vram_addr, void* src_pixels, u8 tiles_to_copy_maybe);
 
 
-/**
- * Allocates a textbox and returns its ID.
- * @returns Textbox ID or 255 on failure.
- * @address{BPRE,08003CE4}
- */
-POKEAGB_EXTERN u8 rboxid_init(struct Textbox* textbox);
 
 /**
  * Allocates a textbox and returns its ID.
@@ -288,7 +282,7 @@ POKEAGB_EXTERN void box_curved(u8 rboxid, u8 player_closed);
  *
  * @address{BPRE,080D87BC}
  */
-POKEAGB_EXTERN void battle_show_message(pchar* str, u8 unk);
+POKEAGB_EXTERN void ShowBattleMessage(pchar* str, u8 unk);
 
 
 /**
@@ -310,7 +304,7 @@ POKEAGB_EXTERN void textbox_close(void);
 POKEAGB_EXTERN void rbox_init_from_templates(struct TextboxTemplate* templates);
 
 /**
- * 
+ *
  * @address{BPRE,0800F380}
  */
 POKEAGB_EXTERN void battlebox_mark_usable(void);
@@ -339,6 +333,64 @@ POKEAGB_EXTERN u32 rboxid_get_field(u8 rid, u8 field);
  * @address{BPRE,0812E5A4}
  */
 POKEAGB_EXTERN void rboxid_add_812E5A4(u8, u8, u8, u8, u8, u8, u32*, u8, pchar*);
+
+
+/**
+ * Sets up a choice box cursor
+ * @address{BPRE,0810F7D8}
+ */
+POKEAGB_EXTERN void choice_setup_simple(u8 rid, u8 fboxid, u8 x, u8 y, u8 y_stride, u8 num_choices, u8 preselected_choice);
+
+
+/**
+ * enables choice selection on a multichoice box. Additionally, returns a value on resolution
+ * -1 = B pressed, -2 = waiting for response, 0+ choice picked
+ * @address{BPRE,0810FA04}
+ */
+POKEAGB_EXTERN s8 rbox_choice_update(void);
+
+/**
+ * Draws an outline around a text box
+ * @address{BPRE,0810F2E8}
+ */
+POKEAGB_EXTERN u32 outline_box(u8 rid, bool trigger_a, u16 tilemap_set_something_idk, u8 pal_slot);
+
+/**
+ * Updates tilemap and tileset of given box, preserving order of execution
+ * @param id Textbox ID according to TextboxTemplate configuration
+ * @address{BPRE,0812DFE4}
+ */
+POKEAGB_EXTERN void rboxid_update_tilemap_and_tileset(u8 id);
+/**
+ * Allocates a single textbox and returns its ID.
+ * @returns Textbox ID or 255 on failure.
+ * @address{BPRE,08003CE4}
+ */
+POKEAGB_EXTERN u8 rboxid_init(struct TextboxTemplate* textbox);
+/**
+ * Gets the game textspeed after modification by the options menu
+ * @address{BPRE,080F78A8}
+ */
+POKEAGB_EXTERN u8 sav2_get_text_speed(void);
+
+/**
+ * Callback, prints text for bag
+ * @address{BPRE,0810A1F8}
+ */
+POKEAGB_EXTERN void bag_print(u8 taskid);
+
+/**
+ * Callback, prints text for bag with SOUND_GENERIC_CLINK on A press
+ * @address{BPRE,0810A1D0}
+ */
+POKEAGB_EXTERN void bag_print_and_click_sound(u8 taskid);
+
+/**
+ * Callback, prints text for bag
+ * @address{BPRE,08108E70}
+ */
+POKEAGB_EXTERN void PrintErrorMsgBag(u8 taskid, u8 fboxid, pchar* str, TaskCallback textHandler);
+
 
 POKEAGB_END_DECL
 

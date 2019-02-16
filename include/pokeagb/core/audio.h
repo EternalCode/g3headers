@@ -17,6 +17,7 @@ enum Sound  {
     SOUND_PC_GO_BACK = 0x3,
     SOUND_PC_OPEN = 0x4,
     SOUND_GENERIC_CLINK = 0x5,
+    SE_WIN_OPEN = 0x6,
     SOUND_WALLRUN = 0x7,
     SOUND_DOOR_OPEN_MAYBE = 0x8,
     SOUND_BIKE_CLINK = 0xB,
@@ -163,13 +164,26 @@ enum Sound  {
  * Play a sound effect.
  * @address{BPRE,080722CC}
  */
-POKEAGB_EXTERN void audio_play(enum Sound sound);
+POKEAGB_EXTERN void PlaySE(enum Sound sound);
 
 /**
  * change music for battle.
  * @address{BPRE,08044090}
  */
-POKEAGB_EXTERN void current_map_music_set__default_for_battle(u16);
+POKEAGB_EXTERN void PlayMapChosenOrBattleBGM(u16);
+
+/**
+ * Check is sound effect is playing
+ * @address{BPRE,080723E0}
+ */
+POKEAGB_EXTERN bool IsSEPlaying(void);
+
+/**
+ * Unsure. Need info.
+ * @address{BPRE,080722F4}
+ */
+POKEAGB_EXTERN void PlaySE12WithPanning(u8 sound_effect, u16 sound_another);
+
 
 POKEAGB_END_DECL
 

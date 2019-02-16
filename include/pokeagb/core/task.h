@@ -43,13 +43,13 @@ POKEAGB_EXTERN u8 task_add(TaskCallback func, u8 priority);
  * Delete a task.
  * @address{BPRE,08077508}
  */
-POKEAGB_EXTERN void task_del(u8 id);
+POKEAGB_EXTERN void DestroyTask(u8 id);
 
 /**
  * Execute all active tasks once.
  * @address{BPRE,08077578}
  */
-POKEAGB_EXTERN void task_exec(void);
+POKEAGB_EXTERN void RunTasks(void);
 
 /**
  * All the tasks.
@@ -75,7 +75,7 @@ POKEAGB_EXTERN u8 task_find_id_by_functpr(TaskCallback func);
 /**
  * @address{BPRE,080773BC}
  */
-POKEAGB_EXTERN void tasks_init(void);
+POKEAGB_EXTERN void ResetTasks(void);
 
 POKEAGB_END_DECL
 

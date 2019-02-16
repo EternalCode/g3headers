@@ -436,6 +436,24 @@ ASSERT_SIZEOF(struct ItemData, 0x2C);
 extern struct ItemData items[ITEM_MAX];
 
 /**
+ * Textbox id for the normal textbox that appears on error during the bag
+ * @address{BPRE,0203AD39}
+ */
+extern u8* gBagNormalTextboxId;
+
+/**
+ * C2 that is set when exiting the bag from battle
+ * @address{BPRE,0203AD10}
+ */
+extern u32* gBagCallback2OnExit;
+
+/**
+ * C2 that is set if the main one isn't. Seems to be a backup.
+ * @address{BPRE,0203ACFC}
+ */
+extern u32* gBagCallback2OnExit_backup;
+
+/**
  * Returns the quantity of the given item in the player's bag. Returns
  * 0 if > 999.
  * @address{BPRE,0809A000}
@@ -448,6 +466,19 @@ POKEAGB_EXTERN u16 get_item_quantity(enum Item item);
  * @address{BPRE,08099F40}
  */
 POKEAGB_EXTERN bool check_item(enum Item item, u8 quantity);
+
+/**
+ * The animation made by collapsing mindows when exiting the bag
+ * @address{BPRE,08108CB4}
+ */
+POKEAGB_EXTERN void BagClosingAnimation(void);
+
+/**
+ * Returns true if the quantity of the item in the player's bag is at
+ * least the specified amount.
+ * @address{BPRE,08108B50}
+ */
+POKEAGB_EXTERN void TaskExitBag(u8 taskId);
 
 POKEAGB_END_DECL
 

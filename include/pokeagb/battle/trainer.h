@@ -27,7 +27,7 @@ struct TrainerPokemonBase {
     u8 field1;
     u8 level;
     u8 field3;
-    enum PokemonSpecies species;
+    u16 species;
 
     /**
      * Can be non-zero if TRAINER_PARTY_HELD_ITEM is set.
@@ -131,7 +131,7 @@ POKEAGB_EXTERN void battle_configure_by_script(void* script_arguments);
  *
  * @address{BPRE,08081E68}
  */
-POKEAGB_EXTERN void add_task_trainer_walk(struct NpcState* npc, u8 distance);
+POKEAGB_EXTERN void add_task_trainer_walk(struct EventObject* npc, u8 distance);
 
 /**
  * @address{BPRE,0808043C}
@@ -147,6 +147,11 @@ POKEAGB_EXTERN void trainer_flag_clear(u16 trainer_id);
  * @address{BPRE,08080424}
  */
 POKEAGB_EXTERN bool trainer_flag_check(u16 trainer_id);
+
+/**
+ * @address{BPRE,08081B30}
+ */
+POKEAGB_EXTERN bool CheckForTrainersWantingBattle(void);
 
 /**
  * @address{BPRE,020386AE}

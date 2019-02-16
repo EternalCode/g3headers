@@ -57,14 +57,14 @@ extern const void *pal_heldicons;
  *
  * @address{BPRE,08097054}
  */
-POKEAGB_EXTERN void* load_party_icon_tiles_with_form(enum PokemonSpecies species,
+POKEAGB_EXTERN void* load_party_icon_tiles_with_form(u16 species,
                                                     u32 pid, bool deoxys);
 
 /**
  * Load the icon palette index for the given Pokemon species.
  * @address{BPRE,080971F8}
  */
-POKEAGB_EXTERN u8 load_party_icon_palette_index(enum PokemonSpecies species);
+POKEAGB_EXTERN u8 load_party_icon_palette_index(u16 species);
 
 /**
  * @address{BPRE,083D350C}

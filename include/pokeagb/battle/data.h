@@ -73,7 +73,7 @@ ASSERT_SIZEOF(struct BattlePokemon, 0x58);
 /**
  * @address{BPRE,0826056C}
  */
-extern struct SpriteTiles ball_tiles[11];
+extern struct CompressedSpriteSheet ball_tiles[11];
 
 /**
  * @address{BPRE,082605CC}
@@ -130,6 +130,16 @@ POKEAGB_EXTERN enum BattleSide battle_side_get_owner(enum BattleBank side);
  * @address{BPRE,080751E8}
  */
 POKEAGB_EXTERN u8 battle_get_side_with_given_state(u8 state);
+
+/**
+ * @address{BPRE,080D08B8}
+ */
+POKEAGB_EXTERN void BattleTransition_StartOnField(u8 transitionId);
+
+/**
+ * @address{BPRE,080D08F8}
+ */
+POKEAGB_EXTERN u8 IsBattleTransitionDone(void);
 
 /**
  * Uses the AI to pick a move index for the current Pokemon.

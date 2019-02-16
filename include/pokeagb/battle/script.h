@@ -24,7 +24,8 @@ struct BattleStuff {
     u8 party_index_10;
     u8 field_11;
     u8 field_12;
-    enum PokemonType move_to_execute_type_override;
+    //enum PokemonType move_to_execute_type_override;
+    u8 move_to_execute_type_override;
     u8 padding_14[53];
     u8 byte_49;
     u8 money_multiplier;

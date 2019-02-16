@@ -69,7 +69,7 @@ struct PokemonPPBonuses {
  * Substructure containing growth related data.
  */
 struct PokemonSubstructureGrowth {
-    enum PokemonSpecies species;
+    u16 species;
     enum Item item;
     u32 experience;
     struct PokemonPPBonuses pp_bonuses;
@@ -126,7 +126,7 @@ ASSERT_SIZEOF(struct PokemonSubstructureMisc, 12);
  * Pokemon base data. This packed format is used for PC storage.
  */
 #pragma pack(push, 1)
-struct PokemonBase {
+struct BoxPokemon {
     /**
      * The personality value controls many things, including gender,
      * Unown's letter, Spinda's dots, any Pokémon's Nature, and more.
@@ -157,7 +157,8 @@ struct PokemonBase {
     /**
      * The low bit is high if the Pokemon is a bad egg.
      */
-    u8 sanity;
+     u8 isEgg:1;
+     u8 unused:5;
 
     /**
      * The name of the Pokémon's Original Trainer. The characters
@@ -185,7 +186,7 @@ struct PokemonBase {
      */
     u16 checksum;
 
-    u16 unused;
+    u16 unused_data;
 
     /**
      * Certain data pertaining to the Pokémon that is stored in a
@@ -203,7 +204,8 @@ struct PokemonBase {
 };
 #pragma pack(pop)
 
-ASSERT_SIZEOF(struct PokemonBase, 80);
+ASSERT_SIZEOF(struct BoxPokemon, 80);
+
 
 enum PokemonAilment {
     AILMENTBITS_NONE = 0x0,
@@ -219,17 +221,17 @@ enum PokemonAilment {
  * Extended Pokemon data.
  */
 struct Pokemon {
-    struct PokemonBase base;
+    struct BoxPokemon box;
     enum PokemonAilment __attribute__((aligned(4))) status;
     u8 level;
-    u8 pokerus;
-    u16 current_hp;
-    u16 total_hp;
-    u16 atk;
-    u16 def;
-    u16 spd;
-    u16 spatk;
-    u16 spdef;
+    u8 mail;
+    u16 hp;
+    u16 maxHP;
+    u16 attack;
+    u16 defense;
+    u16 speed;
+    u16 spAttack;
+    u16 spDefense;
 };
 
 ASSERT_SIZEOF(struct Pokemon, 100);
@@ -240,19 +242,19 @@ ASSERT_SIZEOF(struct Pokemon, 100);
 enum PokemonDataRequest {
     /**
      * The personality ID of the Pokemon.
-     * @see PokemonBase
+     * @see BoxPokemon
      */
     REQUEST_PID = 0x0,
 
     /**
      * The original trainer ID (including secret ID) of the Pokemon.
-     * @see PokemonBase
+     * @see BoxPokemon
      */
     REQUEST_TID = 0x1,
 
     /**
      * The Pokemon's nickname.
-     * @see PokemonBase
+     * @see BoxPokemon
      */
     REQUEST_NICK = 0x2,
 
@@ -264,45 +266,45 @@ enum PokemonDataRequest {
 
     /**
      * Bad egg.
-     * @see PokemonBase
+     * @see BoxPokemon
      */
     REQUEST_SANITY_X4 = 0x4,
 
     /**
      * Unknown. Bit 1 of the sanity byte.
-     * @see PokemonBase
+     * @see BoxPokemon
      */
     REQUEST_SANITY_X5 = 0x5,
 
     /**
      * Seems be a second indicator for egg. Bit 2 of the sanity byte.
-     * @see PokemonBase
+     * @see BoxPokemon
      */
     REQUEST_SANITY_X6 = 0x6,
 
     /**
      * The name of the Pokmeon's original trainer.
-     * @see PokemonBase
+     * @see BoxPokemon
      */
     REQUEST_OT_NAME = 0x7,
 
     /**
      * The markings for the pokemon (heart, circle, etc.)
-     * @see PokemonBase
+     * @see BoxPokemon
      */
     REQUEST_MARKS = 0x8,
 
     /**
      * The data checksum. If this is invalid the Pokemon will become a
      * bad egg.
-     * @see PokemonBase
+     * @see BoxPokemon
      */
     REQUEST_CHECKSUM = 0x9,
 
     /**
      * The species of the Pokemon.
-     * SPECIES_MAX if the Pokemon is a bad egg.
-     * @see PokemonBase, PokemonSpecies
+     * 412 if the Pokemon is a bad egg.
+     * @see BoxPokemon, PokemonSpecies
      */
     REQUEST_SPECIES = 0xB,
 
@@ -538,77 +540,77 @@ enum PokemonDataRequest {
 
     /**
      * The status ailment of the Pokemon.
-     * @invariant Needs an extended Pokemon struct instead of PokemonBase.
+     * @invariant Needs an extended Pokemon struct instead of BoxPokemon.
      * @see Pokemon
      */
     REQUEST_STATUS_AILMENT = 0x37,
 
     /**
      * The level of the Pokemon. Calculated using level_by_exp.
-     * @invariant Needs an extended Pokemon struct instead of PokemonBase.
+     * @invariant Needs an extended Pokemon struct instead of BoxPokemon.
      * @see Pokemon
      */
     REQUEST_LEVEL = 0x38,
 
     /**
      * The Pokemon's current health.
-     * @invariant Needs an extended Pokemon struct instead of PokemonBase.
+     * @invariant Needs an extended Pokemon struct instead of BoxPokemon.
      * @see Pokemon
      */
     REQUEST_CURRENT_HP = 0x39,
 
     /**
      * The Pokemon's total health.
-     * @invariant Needs an extended Pokemon struct instead of PokemonBase.
+     * @invariant Needs an extended Pokemon struct instead of BoxPokemon.
      * @see Pokemon
      */
     REQUEST_TOTAL_HP = 0x3A,
 
     /**
      * The Pokemon's current attack stat.
-     * @invariant Needs an extended Pokemon struct instead of PokemonBase.
+     * @invariant Needs an extended Pokemon struct instead of BoxPokemon.
      * @see Pokemon
      */
     REQUEST_ATK = 0x3B,
 
     /**
      * The Pokemon's current defense stat.
-     * @invariant Needs an extended Pokemon struct instead of PokemonBase.
+     * @invariant Needs an extended Pokemon struct instead of BoxPokemon.
      * @see Pokemon
      */
     REQUEST_DEF = 0x3C,
 
     /**
      * The Pokemon's current speed stat.
-     * @invariant Needs an extended Pokemon struct instead of PokemonBase.
+     * @invariant Needs an extended Pokemon struct instead of BoxPokemon.
      * @see Pokemon
      */
     REQUEST_SPD = 0x3D,
 
     /**
      * The Pokemon's current special attack stat.
-     * @invariant Needs an extended Pokemon struct instead of PokemonBase.
+     * @invariant Needs an extended Pokemon struct instead of BoxPokemon.
      * @see Pokemon
      */
     REQUEST_SPATK = 0x3E,
 
     /**
      * The Pokemon's current special defense stat.
-     * @invariant Needs an extended Pokemon struct instead of PokemonBase.
+     * @invariant Needs an extended Pokemon struct instead of BoxPokemon.
      * @see Pokemon
      */
     REQUEST_SPDEF = 0x3F,
 
     /**
      * The days remaining of the Pokerus virus.
-     * @invariant Needs an extended Pokemon struct instead of PokemonBase.
+     * @invariant Needs an extended Pokemon struct instead of BoxPokemon.
      * @see Pokemon
      */
     REQUEST_POKERUS_REMAINING = 0x40,
 
     /**
      * Get species only if the Pokemon is not an egg.
-     * @see PokemonBase, PokemonSpecies
+     * @see BoxPokemon, PokemonSpecies
      */
     REQUEST_SPECIES2 = 0x41,
 
@@ -668,7 +670,7 @@ POKEAGB_EXTERN void pokemon_setattr(void* pokemon,
  * Calculate the Pokemon's level using its experience points.
  * @adddress{BPRE,0803E7C4}
  */
-POKEAGB_EXTERN int level_by_exp(struct PokemonBase* pokemon);
+POKEAGB_EXTERN int level_by_exp(struct BoxPokemon* pokemon);
 
 /**
  * @address{BPRE,02024284}
@@ -696,8 +698,8 @@ extern struct Pokemon party_opponent[POKEMON_PARTY_SIZE];
  * @param tid The provided TID (use_tid must be 1)
  * @address{BPRE,0803DAC4}
  */
-POKEAGB_EXTERN void pokemon_make(struct PokemonBase* dst,
-                                 enum PokemonSpecies species,
+POKEAGB_EXTERN void pokemon_make(struct BoxPokemon* dst,
+                                 u16 species,
                                  u8 level,
                                  u8 iv,
                                  bool use_pid,
@@ -710,7 +712,7 @@ POKEAGB_EXTERN void pokemon_make(struct PokemonBase* dst,
  * @address{BPRE,0803DA54}
  */
 POKEAGB_EXTERN void pokemon_make_full(struct Pokemon* dst,
-                                      enum PokemonSpecies species,
+                                      u16 species,
                                       u8 level,
                                       u8 iv,
                                       bool use_pid,
@@ -719,10 +721,10 @@ POKEAGB_EXTERN void pokemon_make_full(struct Pokemon* dst,
                                       u32 tid);
 
 /**
- * Clear a PokemonBase slot.
+ * Clear a BoxPokemon slot.
  * @address{BPRE,0803D97C}
  */
-POKEAGB_EXTERN void pokemon_slot_purge(struct PokemonBase* dst);
+POKEAGB_EXTERN void pokemon_slot_purge(struct BoxPokemon* dst);
 
 /**
  * Clear a 100 byte Pokemon slot.
@@ -732,7 +734,7 @@ POKEAGB_EXTERN void pokemon_slot_purge_full(struct Pokemon* dst);
 
 /**
  * Calculate the stats for the Pokemon. Can be used to expand a
- * PokemonBase struct into a full Pokemon struct.
+ * BoxPokemon struct into a full Pokemon struct.
  *
  * @address{BPRE,0803E47C}
  */
@@ -754,7 +756,21 @@ POKEAGB_EXTERN u16 pokemon_calc_checksum(struct Pokemon* pokemon);
  *
  * @address{BPRE,08040FD0}
  */
-POKEAGB_EXTERN void copy_pokemon_name(pchar* dst, enum PokemonSpecies);
+POKEAGB_EXTERN void copy_pokemon_name(pchar* dst, u16 PokemonSpecies);
+
+
+/**
+ * The wild pokemon will try to flee
+ * @address{BPRE,0807F78C}
+ */
+POKEAGB_EXTERN void StartWildBattleWithFleeingMon(void);
+
+
+/**
+ * The wild pokemon will stay and fight
+ * @address{BPRE,0807F8C4}
+ */
+POKEAGB_EXTERN void StartWildBattleNormal(void);
 
 
 /**
@@ -776,6 +792,13 @@ enum PokemonGender {
  * @address{BPRE,0803F720}
  */
 POKEAGB_EXTERN u8 pokemon_get_gender(struct Pokemon* pokemon);
+
+/**
+ * Retrieve gender using PID and base stats table
+ *
+ * @address{BPRE,0803E830}
+ */
+POKEAGB_EXTERN u8 GetPokemonLevel(struct Pokemon* pokemon);
 
 #define STATUS_SLEEP_TURNS 7
 #define STATUS_POISON (1 << 3)

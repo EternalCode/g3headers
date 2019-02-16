@@ -20,6 +20,21 @@ enum DexFlagOperation {
     /* TODO: Figure out rest */
 };
 
+#define POKEMON_SLOTS_NUMBER 412
+#define DEX_FLAGS_NO ((POKEMON_SLOTS_NUMBER / 8) + ((POKEMON_SLOTS_NUMBER % 8) ? 1 : 0))
+
+struct Pokedex {
+    /*0x00*/ u8 order;
+    /*0x01*/ u8 unknown1;
+    /*0x02*/ u8 nationalMagic; // must equal 0xDA in order to have National mode
+    /*0x03*/ u8 unknown2;
+    /*0x04*/ u32 unownPersonality; // set when you first see Unown
+    /*0x08*/ u32 spindaPersonality; // set when you first see Spinda
+    /*0x0C*/ u32 unknown3;
+    /*0x10*/ u8 owned[DEX_FLAGS_NO];
+    /*0x44*/ u8 seen[DEX_FLAGS_NO];
+};
+
 /**
  * Check the Pokedex flag given a Pokedex index.
  * @param index The species or Pokedex index
@@ -41,18 +56,18 @@ POKEAGB_EXTERN bool dex_flag(u16 index, enum DexFlagOperation op, bool convert_i
  * Convert a species index to a Pokedex index.
  * @address{BPRE,08043298}
  */
-POKEAGB_EXTERN u16 species_to_pokedex_index(enum PokemonSpecies);
+POKEAGB_EXTERN u16 species_to_pokedex_index(u16);
 
 /**
  * Convert a species index to a Pokedex index.
  * @address{BPRE,08043200}
  */
-POKEAGB_EXTERN enum PokemonSpecies pokedex_index_to_species(u16);
+POKEAGB_EXTERN u16 pokedex_index_to_species(u16);
 
 /**
  * @address{BPRE,08251FEE}
  */
-extern const u16 pokedex_order[SPECIES_MAX - 1];
+extern const u16 pokedex_order[412 - 1];
 
 POKEAGB_END_DECL
 

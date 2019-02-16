@@ -243,24 +243,30 @@ extern u16 var_8010;
  */
 extern u16 var_8011;
 
+/**
+ * Amount of pokemon in player's party
+ * @address{BPRE,02024029}
+ */
+extern u8 gPartyCount;
+
 
 /**
  * Read the value in a script variable
  * @address{BPRE,0806E568}
  */
-POKEAGB_EXTERN u16 var_load(u16 variable);
+POKEAGB_EXTERN u16 VarGet(u16 variable);
 
 /**
  * Read the value in a script variable
  * @address{BPRE,0806E454}
  */
-POKEAGB_EXTERN u16* var_access(u16 variable);
+POKEAGB_EXTERN u16* OldGetVarPointer(u16 variable);
 
 /**
  * Set a value to a script variable
  * @address{BPRE,0806E584}
  */
-POKEAGB_EXTERN u16* var_set(u16 variable, u16 value);
+POKEAGB_EXTERN u16* VarSet(u16 variable, u16 value);
 
 /**
  * NPC state id of the NPC running the script
@@ -272,7 +278,7 @@ extern u8 scripting_npc;
  * Initialise the script state with the given instruction pointer.
  * @address{BPRE,08069AE4}
  */
-POKEAGB_EXTERN void script_env_init_script(void* script);
+POKEAGB_EXTERN void ScriptContext1_SetupScript(void* script);
 
 /**
  * Mark state as script is running
@@ -290,10 +296,28 @@ POKEAGB_EXTERN void script_env_disable(void);
  * Set a flag
  * @address{BPRE,0806E680}
  */
-POKEAGB_EXTERN void flag_set(u16 flag);
+POKEAGB_EXTERN u8 FlagSet(u16 flag);
 
 /**
- * Check script_env_2 is enabled 
+ * clear a flag
+ * @address{BPRE,0806E6A8}
+ */
+POKEAGB_EXTERN u8 FlagClear(u16 flag);
+
+/**
+ * Check a flag
+ * @address{BPRE,0806E6D0}
+ */
+POKEAGB_EXTERN bool FlagGet(u16 flag);
+
+/**
+ * Get pointer to a flag
+ * @address{BPRE,0806E5C0}
+ */
+POKEAGB_EXTERN u8 *OldGetFlagPointer(u16 id);
+
+/**
+ * Check script_env_2 is enabled
  * @address{BPRE,08069958}
  */
 POKEAGB_EXTERN bool script_env_2_is_enabled(void);
@@ -322,7 +346,13 @@ POKEAGB_EXTERN u8 special_is_finished(void);
  * Select pokemon launch
  * @address{BPRE,0811FB28}
  */
-POKEAGB_EXTERN void select_pokemon_launch(u8, u8, u8, u8, u8, SuperCallback);
+POKEAGB_EXTERN void select_pokemon_launch(u8, u8, u8, u8, u8, MainCallback);
+
+/**
+ * Resume script execution after waitstate
+ * @address{BPRE,08069B34}
+ */
+POKEAGB_EXTERN void script_env_2_enable_and_set_ctx_running(void);
 
 /**
  * Resume script execution after waitstate
@@ -335,6 +365,12 @@ POKEAGB_EXTERN void script_env_2_enable_and_set_ctx_running(void);
  * @address{BPRE,08054440}
  */
 POKEAGB_EXTERN void trade_pokemon(void);
+
+/**
+ * Trades Pokemon in slot indicated by var 08004, with opponent's first slot pkmn.
+ * @address{BPRE,0805FC38}
+ */
+POKEAGB_EXTERN const u8 *GetEventObjectScriptPointerByEventObjectId(u8 eventObjectId);
 
 POKEAGB_END_DECL
 

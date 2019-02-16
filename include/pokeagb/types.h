@@ -20,7 +20,7 @@ typedef volatile u32 vu32;
 typedef volatile s8 vs8;
 typedef volatile s16 vs16;
 typedef volatile s32 vs32;
-
+#define ALIGNED(n) __attribute__((aligned(n)))
 POKEAGB_END_DECL
 
 #endif /* POKEAGB_TYPES_H_ */

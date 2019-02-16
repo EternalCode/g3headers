@@ -40,6 +40,11 @@ POKEAGB_EXTERN void safari_stepscount_close(void);
  */
 POKEAGB_EXTERN void c2_overworld_switch_start_menu(void);
 
+/**
+ * @address{BPRE,0x0806F410}
+ */
+POKEAGB_EXTERN bool sm_pokedex(void);
+
 POKEAGB_END_DECL
 
 #endif /* POKEAGB_OW_UI_H_ */

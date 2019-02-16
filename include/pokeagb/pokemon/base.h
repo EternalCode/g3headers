@@ -18,6 +18,7 @@ POKEAGB_BEGIN_DECL
 
 #define POKEAGB_POKEMON_SLOTS 412
 #define POKEAGB_POKEMON_NAME_LENGTH 11
+#define POKEMON_NAME_LENGTH 10
 
 enum PokemonEggGroup {
     EGG_GROUP_MONSTER,
@@ -51,12 +52,12 @@ enum PokemonExpGrowth {
 };
 
 /* struct PokemonExpGrowthCurveTable {
-    u32 EXP_MEDIUM_FAST[SPECIES_MAX];
-    u32 EXP_ERRATIC[SPECIES_MAX];
-    u32 EXP_FLUCTUATING[SPECIES_MAX];
-    u32 EXP_MEDIUM_SLOW[SPECIES_MAX];
-    u32 EXP_FAST[SPECIES_MAX];
-    u32 EXP_SLOW[SPECIES_MAX];
+    u32 EXP_MEDIUM_FAST[412];
+    u32 EXP_ERRATIC[412];
+    u32 EXP_FLUCTUATING[412];
+    u32 EXP_MEDIUM_SLOW[412];
+    u32 EXP_FAST[412];
+    u32 EXP_SLOW[412];
 }; */
 
 /**
@@ -89,7 +90,8 @@ struct PokemonBaseStat {
     u8 spd;
     u8 spatk;
     u8 spdef;
-    enum PokemonType type[2];
+    //enum PokemonType type[2];
+    u8 type[2];
     u8 catch_rate;
     u8 xp_yield;
     u16 effort_yield;
@@ -112,14 +114,14 @@ ASSERT_SIZEOF(struct PokemonBaseStat, 0x1C);
  *
  * @address{BPRE,08254784}
  */
-extern struct PokemonBaseStat pokemon_base_stats[POKEAGB_POKEMON_SLOTS];
+extern struct PokemonBaseStat old_pokemon_base_stats[POKEAGB_POKEMON_SLOTS];
 
 /**
  * Pokemon names table.
  *
  * @address{BPRE,08245EE0}
  */
-extern pchar pokemon_names[POKEAGB_POKEMON_SLOTS][POKEAGB_POKEMON_NAME_LENGTH];
+extern pchar old_pokemon_names[POKEAGB_POKEMON_SLOTS][POKEAGB_POKEMON_NAME_LENGTH];
 
 
 /**
@@ -142,7 +144,7 @@ extern u8 game_language;
  * @address{BPRE, 08088E38}
  */
  extern u32 pokemon_get_weight(u16 species, u8 index);
- 
+
 
 POKEAGB_END_DECL
 

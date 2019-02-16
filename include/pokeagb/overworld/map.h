@@ -386,6 +386,13 @@ struct MapConnections {
     struct MapConnection* data;
 };
 
+struct MapPosition
+{
+    s16 x;
+    s16 y;
+    s8 height;
+};
+
 /**
  * A map.
  */
@@ -410,15 +417,15 @@ ASSERT_SIZEOF(struct MapHeader, 0x1C);
 
 
 /**
- * Current map header 
+ * Current map header
  * @address{BPRE,02036DFC}
  */
  extern struct MapHeader currentmap_header;
 
 /**
- * Current map header 
+ * Current map header
  * @address{BPRE,08058DC4}
- */ 
+ */
 POKEAGB_EXTERN u8 cur_mapdata_get_middle2bit_at(s16 x, s16 y);
 
 /**
@@ -438,7 +445,7 @@ POKEAGB_EXTERN u8 cur_mapdata_height_mismatch(u8 height, s16 x, s16 y);
  * Check if map light supports flying/teleporting. I.e not indoors or cave.
  * @address{BPRE,080561FC}
  */
-POKEAGB_EXTERN bool is_light_level_1_2_3_or_6__opensky(u8 map_light);
+POKEAGB_EXTERN bool MapOutside(u8 map_light);
 
 /**
  * @address{BPRE,08056260}
@@ -469,7 +476,7 @@ struct map_wild_pokemon_data {
     u8 map_num;
     u16 padding;
     struct pokemon_by_encounter_rate *grass_encounter; // 12 slots
-    struct pokemon_by_encounter_rate *water_encounter; // 5 slots 
+    struct pokemon_by_encounter_rate *water_encounter; // 5 slots
     struct pokemon_by_encounter_rate *tree_encounter; // 5 slots
     struct pokemon_by_encounter_rate *fishing_encounter; // 10 slots
 
@@ -481,37 +488,127 @@ struct map_wild_pokemon_data {
  * Wild data
  * @address{BPRE,083C9CB8}
  */
-extern struct map_wild_pokemon_data wild_pokemon_data[WILD_MAPS_MAX]; // maybe it's not 133 and I can't count
+extern struct map_wild_pokemon_data gWildMonHeaders[WILD_MAPS_MAX]; // maybe it's not 133 and I can't count
+
+/**
+ * Keeps track of previous metatile the player stepped on
+ * @address{BPRE,020386D4}
+ */
+extern u8 gPreviousPlayerMetatileBehaviour;
+
+/**
+ * Keeps track of previous metatile the player stepped on
+ * @address{BPRE,020386D8}
+ */
+extern u8 gWildEncounterImmunitySteps;
+
+/**
+ * First Pokemon in the player's party's held item
+ * @address{BPRE,020386DA}
+ */
+extern u16 gStepUpdatedFirstPokemonItemPlayer;
 
 /**
  * @address{BPRE,08082934}
  */
-extern u8 get_wild_data_index_for_map(void);
+POKEAGB_EXTERN u8 get_wild_data_index_for_map(void);
 
 /**
  * @address{BPRE,08058F48}
  */
-extern u32 cur_mapdata_block_get_field_at(u16 x_coord, u16 y_coord, u8 unk);
+POKEAGB_EXTERN u32 cur_mapdata_block_get_field_at(s16 x_coord, s16 y_coord, u8 unk);
+
+/**
+ * @address{BPRE,0805BBA8}
+ */
+POKEAGB_EXTERN u8 CheckForEventObjectCollision(struct EventObject *o, s16 x, s16 y, u8 direction, u8 behaviour);
+
+
+/**
+ * @address{BPRE,080636AC}
+ */
+POKEAGB_EXTERN u8 GetCollisionAtCoords(struct EventObject *o, s16 x, s16 y, u8 direction);
 
 
 /**
  * @address{BPRE,08058F1C}
  */
-extern u32 blockinfo_get_field(u32 block_info, u8 field);
+POKEAGB_EXTERN u32 blockinfo_get_field(u32 block_info, u8 field);
 
 
 /**
  * @address{BPRE,0807F748}
  */
-extern void exec_battle(void);
+POKEAGB_EXTERN void exec_battle(void);
 
 
 /**
- * Needs a better name. Logs coords 
+ * @address{BPRE,0806CE74}
+ */
+POKEAGB_EXTERN u8 GetPlayerCurMetatileBehavior(u8 runningState);
+
+
+/**
+ * @address{BPRE,08058F78}
+ */
+POKEAGB_EXTERN u8 MapGridGetMetatileBehaviorAt(s16 x, s16 y);
+
+/**
+ * @address{BPRE,08059D70}
+ */
+POKEAGB_EXTERN u8 MetatileBehavior_IsForcedMovementTile(u8 tilebehavior);
+
+/**
+ * @address{BPRE,080BD674}
+ */
+POKEAGB_EXTERN s8 GetPlayerSpeed(void);
+
+
+/**
+ * @address{BPRE,08069C74}
+ */
+POKEAGB_EXTERN bool mapheader_run_first_tag2_script_list_match(void);
+
+/**
+ * Look through the map header for map trigger scripts on the given position to start
+ * @address{BPRE,0806D660}
+ */
+POKEAGB_EXTERN bool TryStartCoordEventScript(struct MapPosition* pos);
+
+/**
+ * Look through the map header for map trigger scripts on the given position to start
+ * @address{BPRE,0806DA10}
+ */
+POKEAGB_EXTERN bool TryStartWarpEventScript(struct MapPosition* pos, u16 metatileBehavior);
+
+/**
+ * Warp via a staircase or warp tile if player is moving into that tile's direction
+ * @address{BPRE,0806D964}
+ */
+POKEAGB_EXTERN bool TryArrowWarp(struct MapPosition* pos, u16 metatileBehavior, u8 dir);
+
+/**
+ * Try to start an A-pressed on position infront of player script
+ * @address{BPRE,0806CEA0}
+ */
+POKEAGB_EXTERN bool TryStartInteractionScript(struct MapPosition* pos, u16 metatileBehavior, u8 dir);
+
+/**
+ * @address{BPRE,0806DCD0}
+ */
+POKEAGB_EXTERN bool TryDoorWarp(struct MapPosition* pos, u16 metatileBehavior, u8 dir);
+
+/**
+ * @address{BPRE,0806CE38}
+ */
+POKEAGB_EXTERN void GetInFrontOfPlayerPosition(struct MapPosition* pos);
+
+/**
+ * Needs a better name. Logs coords
  * and size of object to some structure
  * @address{BPRE,08063BC4}
  */
-extern void log_coords_relative_camera(s32* x, s32* y, u8 size_x, u8 size_y);
+POKEAGB_EXTERN void log_coords_relative_camera(s32* x, s32* y, u8 size_x, u8 size_y);
 
 POKEAGB_END_DECL
 

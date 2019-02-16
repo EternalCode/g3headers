@@ -39,9 +39,25 @@ struct mapblock_16color {
 };
 
 /**
+ * @address{BPRE,0300501C}
+ */
+extern u16* gBGTilemapBuffers3;
+
+/**
+ * @address{BPRE,03005014}
+ */
+extern u16* gBGTilemapBuffers2;
+
+/**
+ * @address{BPRE,03005018}
+ */
+extern u16* gBGTilemapBuffers1;
+
+/**
  * @address{BPRE,030008E8}
  */
 extern struct BgConfig2 bg_config2[4];
+
 
 /**
  * @address{BPRE,08001618}
@@ -115,12 +131,12 @@ POKEAGB_EXTERN void* decompress_with_fallback_maybe(u8 layer,
 /**
  * @address{BPRE,080019BC}
  */
-POKEAGB_EXTERN void gpu_sync_bg_show(u8 layer);
+POKEAGB_EXTERN void ShowBg(u8 layer);
 
 /**
  * @address{BPRE,080019D0}
  */
-POKEAGB_EXTERN void gpu_sync_bg_hide(u8 layer);
+POKEAGB_EXTERN void HideBg(u8 layer);
 
 /**
  * @address{BPRE,08007320}

@@ -113,7 +113,7 @@ struct EvolutionEntry {
     /**
      * The species to evolve into.
      */
-    enum PokemonSpecies species;
+    u16 species;
 
     /**
      * Padding.

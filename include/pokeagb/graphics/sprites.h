@@ -12,13 +12,13 @@ POKEAGB_BEGIN_DECL
 
 #define SPRITE_RAM 0x6010000
 
-struct Object;
+struct Sprite;
 
 /**
  * Sprite object callback.
  * @param o The object the callback belongs to
  */
-typedef void (*ObjectCallback)(struct Object* o);
+typedef void (*SpriteCallback)(struct Sprite* s);
 
 /**
  * 8 bit coordinates
@@ -113,9 +113,10 @@ struct OamData {
 /**
  * Tileset Data
  */
-struct SpriteTiles {
-    const void* data;
-    u16 size;
+
+struct CompressedSpriteSheet {
+    void* data;// LZ77 compressed pixel data
+    u16 size;// Uncompressed size of pixel data
     u16 tag;
 };
 
@@ -132,42 +133,84 @@ struct Template {
     u16 pal_tag;
     const struct OamData* oam;
     const struct Frame (**animation)[];
-    const struct SpriteTiles* graphics;
+    const struct CompressedSpriteSheet* graphics;
     const struct RotscaleFrame (**rotscale)[];
-    ObjectCallback callback;
+    SpriteCallback callback;
 };
 
 /**
  * Sprite object
  */
-struct Object {
+ struct Subsprite
+{
+    s8 x; // was u16 in R/S
+    s8 y; // was u16 in R/S
+    u16 shape:2;
+    u16 size:2;
+    u16 tileOffset:10;
+    u16 priority:2;
+};
+
+struct SubspriteTable
+{
+    u8 subspriteCount;
+    const struct Subsprite *subsprites;
+};
+
+struct Sprite {
     struct OamData final_oam;
     struct Frame (**animation_table)[];
-    struct SpriteTiles* gfx_table;
+    struct CompressedSpriteSheet* gfx_table;
     struct RotscaleFrame (**rotscale_table)[];
     struct Template* object_template;
-    u32 field18;
-    ObjectCallback callback;
-    struct Coords16 pos1;
-    struct Coords16 pos2;
-    struct Coords8 shift;
-    u8 anim_number;
-    u8 anim_frame;
-    u8 anim_delay;
-    u8 counter;
-    u16 priv[8];
-    u8 bitfield2;
-    u8 bitfield;
-    u16 anim_data_offset;
-    u8 field42;
-    u8 y_height_related;
+    /*0x18*/ struct SubspriteTable *subspriteTables;
+
+    SpriteCallback callback;
+    /*0x20*/ struct Coords16 pos1;
+    /*0x24*/ struct Coords16 pos2;
+    /*0x28*/ s8 centerToCornerVecX;
+    /*0x29*/ s8 centerToCornerVecY;
+
+    /*0x2A*/ u8 animNum;
+    /*0x2B*/ u8 animCmdIndex;
+    /*0x2C*/ u8 animDelayCounter:6;
+             u8 animPaused:1;
+             u8 affineAnimPaused:1;
+    /*0x2D*/ u8 animLoopCounter;
+
+    // general purpose data fields
+    /*0x2E*/ s16 data[8];
+
+    /*0x3E*/ u16 inUse:1;               //1
+             u16 coordOffsetEnabled:1;  //2
+             u16 invisible:1;           //4
+             u16 flags_3:1;             //8
+             u16 flags_4:1;             //0x10
+             u16 flags_5:1;             //0x20
+             u16 flags_6:1;             //0x40
+             u16 flags_7:1;             //0x80
+    /*0x3F*/ u16 hFlip:1;               //1
+             u16 vFlip:1;               //2
+             u16 animBeginning:1;       //4
+             u16 affineAnimBeginning:1; //8
+             u16 animEnded:1;           //0x10
+             u16 affineAnimEnded:1;     //0x20
+             u16 usingSheet:1;          //0x40
+             u16 flags_f:1;             //0x80
+
+    /*0x40*/ u16 sheetTileStart;
+
+    /*0x42*/ u8 subspriteTableNum:6;
+             u8 subspriteMode:2;
+
+    /*0x43*/ u8 subpriority;
 };
 
 /**
  * All the objects
  * @address{BPRE,0202063C}
  */
-extern struct Object objects[64];
+extern struct Sprite gSprites[64];
 
 /**
  * @address{BPRE,08231CFC}
@@ -185,12 +228,12 @@ extern const struct Frame (*anim_image_empty)[];
 /**
  * @address{BPRE,0800760C}
  */
-POKEAGB_EXTERN void oac_nullsub(struct Object* o);
+POKEAGB_EXTERN void oac_nullsub(struct Sprite* o);
 
 /**
  * @address{BPRE,08006B5C}
  */
-POKEAGB_EXTERN void objc_exec(void);
+POKEAGB_EXTERN void AnimateSprites(void);
 
 /**
  * @address{BPRE,08006FE0}
@@ -200,12 +243,7 @@ POKEAGB_EXTERN u8 template_instanciate_reverse_search(struct Template*, s16 x, s
 /**
  * @address{BPRE,08006BA8}
  */
-POKEAGB_EXTERN DEPRECATED void obj_sync_something(void);
-
-/**
- * @address{BPRE,08006BA8}
- */
-POKEAGB_EXTERN void obj_sync_superstate(void);
+POKEAGB_EXTERN void BuildOAMBuffer(void);
 
 /**
  * @address{BPRE,08006F8C}
@@ -216,14 +254,22 @@ POKEAGB_EXTERN u8 template_instanciate_forward_search(const struct Template*,
                                                       u8 priority);
 
 /**
+ * @address{BPRE,080071EC}
+ */
+POKEAGB_EXTERN u8 CreateSpriteAndAnimate(const struct Template*,
+                                                      u16 x,
+                                                      u16 y,
+                                                      u8 priority);
+
+/**
  * @address{BPRE,08007804}
  */
-POKEAGB_EXTERN u8 obj_delete_and_free(struct Object*);
+POKEAGB_EXTERN u8 obj_delete_and_free(struct Sprite*);
 
 /**
  * @address{BPRE,0800F078}
  */
-POKEAGB_EXTERN void gpu_pal_decompress_alloc_tag_and_upload(struct SpritePalette* pal);
+POKEAGB_EXTERN void LoadCompressedSpritePaletteUsingHeap(struct SpritePalette* pal);
 
 /**
  * @address{BPRE,08008928}
@@ -233,12 +279,12 @@ POKEAGB_EXTERN u8 gpu_pal_obj_alloc_tag_and_apply(struct SpritePalette* pal);
 /**
  * @address{BPRE,0800F034}
  */
-POKEAGB_EXTERN void gpu_tile_obj_decompress_alloc_tag_and_upload(struct SpriteTiles* tile);
+POKEAGB_EXTERN void LoadCompressedSpriteSheetUsingHeap(struct CompressedSpriteSheet* tile);
 
 /**
  * @address{BPRE,080086DC}
  */
-POKEAGB_EXTERN void gpu_tile_obj_alloc_tag_and_upload(struct SpriteTiles* tile);
+POKEAGB_EXTERN void gpu_tile_obj_alloc_tag_and_upload(struct CompressedSpriteSheet* tile);
 
 /**
  * @address{BPRE,08008804}
@@ -248,12 +294,12 @@ POKEAGB_EXTERN u16 gpu_tile_obj_tag_range_for_tag(u16 tile_tag);
 /**
  * @address{BPRE,08008A30}
  */
-POKEAGB_EXTERN u16 gpu_pal_free_by_tag(u16 pal_tag);
+POKEAGB_EXTERN u16 FreeSpritePaletteByTag(u16 pal_tag);
 
 /**
  * @address{BPRE,08006B10}
  */
-POKEAGB_EXTERN void obj_and_aux_reset_all(void);
+POKEAGB_EXTERN void ResetSpriteData(void);
 
 /**
  * @address{BPRE,080087C4}
@@ -263,18 +309,18 @@ POKEAGB_EXTERN void gpu_tile_obj_tags_reset(void);
 /**
  * @address{BPRE,080836B4}
  */
-POKEAGB_EXTERN void obj_free(struct Object *obj);
+POKEAGB_EXTERN void obj_free(struct Sprite *obj);
 
 
 /**
  * @address{BPRE,0800874C}
  */
-POKEAGB_EXTERN void gpu_tile_obj_free_by_tag(u16 tag);
+POKEAGB_EXTERN void FreeSpriteTilesByTag(u16 tag);
 
 /**
  * @address{BPRE,080073DC}
  */
-POKEAGB_EXTERN void obj_delete(struct Object *obj);
+POKEAGB_EXTERN void obj_delete(struct Sprite *obj);
 
 /**
  * Bouncing object. Uses private variables for control.
@@ -286,7 +332,7 @@ POKEAGB_EXTERN void obj_delete(struct Object *obj);
  * private[5] = Phase Shift
  * @address{BPRE,08133904}
  */
-POKEAGB_EXTERN void oac_pingpong(struct Object*);
+POKEAGB_EXTERN void oac_pingpong(struct Sprite*);
 
 /**
  * Sine wave. Used to animate bouncing objects.
@@ -321,10 +367,22 @@ POKEAGB_EXTERN void obj_id_set_rotscale(u8 objid, u32 pa, u32 pb, u32 pc, u32 pd
 POKEAGB_EXTERN void rotscale_reset(void);
 
 /**
- * Resets the rotscale animation for an object and starts the animation from the specified rotscale table index 
+ * Delete and free tiles
+ * @address{BPRE,08007280}
+ */
+POKEAGB_EXTERN void DestroySprite(struct Sprite*);
+
+/**
+ * reset rotscale entries for all
+ * @address{BPRE,080077D8}
+ */
+POKEAGB_EXTERN void FreeSpriteOamMatrix(struct Sprite*);
+
+/**
+ * Resets the rotscale animation for an object and starts the animation from the specified rotscale table index
  * @address{BPRE,0800843C}
  */
-POKEAGB_EXTERN void obj_rotscale_play(struct Object* obj, u8 table_index);
+POKEAGB_EXTERN void obj_rotscale_play(struct Sprite* obj, u8 table_index);
 
 /**
  * set oam animation start

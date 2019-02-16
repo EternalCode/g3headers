@@ -25,138 +25,206 @@ POKEAGB_BEGIN_DECL
 /**
  * An NPC in the overworld.
  */
-struct NpcState {
-    u8 bitfield;
-    u8 field1;
-    u8 field2;
-    u8 field3;
-    u8 oam_id;
-    u8 type_id;
-    u8 running_behavior;
-    u8 is_trainer;
-    u8 local_id;
-    u8 local_map_number;
-    u8 local_map_bank;
-    u8 height;
-    struct Coords16 stay_around;
-    struct Coords16 to;
-    struct Coords16 from;
-    u8 direction;
-    u8 movement_area;
-    u8 field1A;
-    u8 oamid2;
-    u8 state;
-    u8 sight_distance;
-    u8 tile_to;
-    u8 tile_from;
-    u8 field20;
-    u8 field21;
-    u8 field22;
-    u8 field23;
+struct EventObject {
+    /*0x00*/ u32 active:1;
+             u32 singleMovementActive:1;
+             u32 triggerGroundEffectsOnMove:1;
+             u32 triggerGroundEffectsOnStop:1;
+             u32 disableCoveringGroundEffects:1;
+             u32 landingJump:1;
+             u32 heldMovementActive:1;
+             u32 heldMovementFinished:1;
+    /*0x01*/ u32 frozen:1;
+             u32 facingDirectionLocked:1;
+             u32 disableAnim:1;
+             u32 enableAnim:1;
+             u32 inanimate:1;
+             u32 invisible:1;
+             u32 offScreen:1;
+             u32 trackedByCamera:1;
+    /*0x02*/ u32 isPlayer:1;
+             u32 hasReflection:1;
+             u32 inShortGrass:1;
+             u32 inShallowFlowingWater:1;
+             u32 inSandPile:1;
+             u32 inHotSprings:1;
+             u32 hasShadow:1;
+             u32 spriteAnimPausedBackup:1;
+    /*0x03*/ u32 spriteAffineAnimPausedBackup:1;
+             u32 disableJumpLandingGroundEffect:1;
+             u32 fixedPriority:1;
+             u32 unk3_3:1;
+    /*0x04*/ u8 spriteId;
+    /*0x05*/ u8 graphicsId;
+    /*0x06*/ u8 animPattern;
+    /*0x07*/ u8 trainerType;
+    /*0x08*/ u8 localId;
+    /*0x09*/ u8 mapNum;
+    /*0x0A*/ u8 mapGroup;
+    /*0x0B*/ u8 mapobj_unk_0B_0:4;
+             u8 elevation:4;
+    /*0x0C*/ struct Coords16 coords1;
+    /*0x10*/ struct Coords16 currentCoords;
+    /*0x14*/ struct Coords16 coords3;
+    /*0x18*/ u8 direction;
+
+    /*0x19*/ union __attribute__((packed)) {
+        u8 as_byte;
+        struct __attribute__((packed)) {
+            u8 x:4;
+            u8 y:4;
+        } __attribute__((aligned (1))) as_nybbles;
+    } __attribute__((aligned (1))) range;
+    /*0x1A*/ u8 mapobj_unk_1A;
+    /*0x1B*/ u8 oamid2;
+    /*0x1C*/ u8 state;
+    /*0x1D*/ u8 sight_distance;
+    /*0x1E*/ u8 tile_to;
+    /*0x1F*/ u8 tile_from;
+    /*0x20*/ u8 mapobj_unk_20;
+    /*0x21*/ u8 mapobj_unk_21;
+    /*0x22*/ u8 animId;
+    /*size = 0x24*/
+};
+
+// player running states
+enum
+{
+    NOT_MOVING,
+    TURN_DIRECTION, // not the same as turning! turns your avatar without moving. also known as a turn frame in some circles
+    MOVING,
+};
+
+enum
+{
+    DIR_NONE = 0,
+    DIR_SOUTH, // 1
+    DIR_NORTH, // 2
+    DIR_WEST, // 3
+    DIR_EAST, // 4
+    DIR_SOUTHWEST,
+    DIR_SOUTHEAST,
+    DIR_NORTHWEST,
+    DIR_NORTHEAST,
+};
+
+// player tile transition states
+enum
+{
+    T_NOT_MOVING,
+    T_TILE_TRANSITION,
+    T_TILE_CENTER, // player is on a frame in which they are centered on a tile during which the player either stops or keeps their momentum and keeps going, changing direction if necessary.
 };
 
 /**
  * The player's movement state.
  */
-struct Walkrun {
-    u8 bitfield;
-    u8 bike;
-    u8 running2;
-    u8 running1;
-    u8 oamid;
-    u8 npcid;
-    u8 lock;
-    u8 gender;
-    u8 xmode;
-    u8 field9;
-    u8 fieldA;
-    u8 fieldB;
-    u32 fieldC;
-    u32 field10;
-    u32 field14;
-    u8 field18;
-    u8 field19;
-    u16 field1A;
-    u16 most_recent_override_tile;
-};
+ struct PlayerAvatar /* 02037078 */
+ {
+     /*0x00*/ u8 flags; // & 0x6 means biking(?)
+     /*0x01*/ u8 unk1; // used to be named bike, but its definitely not that. seems to be some transition flags
+     /*0x02*/ u8 runningState; // this is a static running state. 00 is not moving, 01 is turn direction, 02 is moving.
+     /*0x03*/ u8 tileTransitionState; // this is a transition running state: 00 is not moving, 01 is transition between tiles, 02 means you are on the frame in which you have centered on a tile but are about to keep moving, even if changing directions. 2 is also used for a ledge hop, since you are transitioning.
+     /*0x04*/ u8 spriteId;
+     /*0x05*/ u8 eventObjectId;
+     /*0x06*/ u8 preventStep;
+     /*0x07*/ u8 gender;
+     /*0x08*/ u8 acroBikeState; // 00 is normal, 01 is turning, 02 is standing wheelie, 03 is hopping wheelie
+     /*0x09*/ u8 newDirBackup; // during bike movement, the new direction as opposed to player's direction is backed up here.
+     /*0x0A*/ u8 bikeFrameCounter; // on the mach bike, when this value is 1, the bike is moving but not accelerating yet for 1 tile. on the acro bike, this acts as a timer for acro bike.
+     /*0x0B*/ u8 bikeSpeed;
+ 	// acro bike only
+     /*0x0C*/ u32 directionHistory; // up/down/left/right history is stored in each nybble, but using the field directions and not the io inputs.
+     /*0x10*/ u32 abStartSelectHistory; // same as above but for A + B + start + select only
+ 	// these two are timer history arrays which [0] is the active timer for acro bike. every element is backed up to the next element upon update.
+     /*0x14*/ u8 dirTimerHistory[8];
+     /*0x1C*/ u8 abStartSelectTimerHistory[8];
+ };
 
 /**
  * An NPC in the ROM.
  */
-struct RomNpc {
-    u8 nr;
-    u8 type_nr;
+struct EventObjectTemplate {
+    u8 localId;
+    u8 graphicsId;
     u8 rival;
     u8 field3;
     u16 x;
     u16 y;
-    u8 height;
-    u8 behaviour;
+    u8 elevation;
+    u8 movementType;
     u8 movement_area;
     u8 fieldB;
     u8 trainer_or_mapnumber;
     u8 fieldD;
     u8 sight_distance_or_mapbank;
     u8* script;
-    u16 local_id;
+    u16 flagId;
     u16 field16;
 };
+
 
 /**
  * The player's movement state.
  *
  * @address{BPRE,02037078}
  */
-extern struct Walkrun walkrun_state;
+extern struct PlayerAvatar gPlayerAvatar;
 
 /**
  * Currently loaded NPCs.
  *
  * @address{BPRE,02036E38}
  */
-extern struct NpcState npc_states[16];
+extern struct EventObject gEventObjects[16];
 
 /**
  * Reset NPC state with no checks.
  *
  * @address{BPRE,08063D34}
  */
-POKEAGB_EXTERN u8 npc_half_reset_no_checks(struct NpcState* npc);
+POKEAGB_EXTERN u8 npc_half_reset_no_checks(struct EventObject* npc);
+
+/**
+ *
+ * @address{BPRE,0805BEB8}
+ */
+POKEAGB_EXTERN void sub_805BEB8(void);
 
 /**
  * Reset NPC when state->bitfield & 0x40
  *
  * @address{BPRE,08063D1C}
  */
-POKEAGB_EXTERN void npc_half_reset(struct NpcState* npc);
+POKEAGB_EXTERN void npc_half_reset(struct EventObject* npc);
 
 /**
  * Set the NPC to have the given state (applymovement values) and apply associated animation.
  *
  * @address{BPRE,08063CA4}
  */
-POKEAGB_EXTERN int npc_set_state_2(struct NpcState* npc, u8 state);
+POKEAGB_EXTERN int npc_set_state_2(struct EventObject* npc, u8 state);
 
 /**
  * Reset the NPC when state->bitfield & 0x80 (set by some tile behaviors)
  *
  * @address{BPRE,08063D7C}
  */
-POKEAGB_EXTERN u8 npc_half_reset_when_bit7_is_set(struct NpcState* npc);
+POKEAGB_EXTERN u8 npc_half_reset_when_bit7_is_set(struct EventObject* npc);
 
 /**
  * Find an NPC given their local ID on a given map and bank.
  *
  * @address{BPRE,0805FD5C}
  */
-POKEAGB_EXTERN struct RomNpc* rom_npc_by_local_id_and_map(u8 local_id, u8 map, u8 bank);
+POKEAGB_EXTERN struct EventObjectTemplate* rom_npc_by_local_id_and_map(u8 local_id, u8 map, u8 bank);
 
 /**
  * Spawn a new NPC.
  *
  * @address{BPRE,0805E72C}
  */
-POKEAGB_EXTERN u8 npc_instanciation_something(struct RomNpc*,
+POKEAGB_EXTERN u8 npc_instanciation_something(struct EventObjectTemplate*,
                                               u8 map,
                                               u8 bank,
                                               s16 x_shift,
@@ -167,21 +235,21 @@ POKEAGB_EXTERN u8 npc_instanciation_something(struct RomNpc*,
  *
  * @address{BPRE,0805F060}
  */
-POKEAGB_EXTERN void npc_change_sprite(struct NpcState* npc, u8 sprite);
+POKEAGB_EXTERN void npc_change_sprite(struct EventObject* npc, u8 sprite);
 
 /**
  * Make the NPC face a given direction.
  *
  * @address{BPRE,0805F218}
  */
-POKEAGB_EXTERN void npc_turn(struct NpcState* npc, u8 direction);
+POKEAGB_EXTERN void npc_turn(struct EventObject* npc, u8 direction);
 
 /**
  * Exclamation mark animation over npc.
  *
  * @address{BPRE,08066920}
  */
-POKEAGB_EXTERN void an_exclamation_mark(struct NpcState* npc, struct Object* obj);
+POKEAGB_EXTERN void an_exclamation_mark(struct EventObject* npc, struct Sprite* obj);
 
 /**
  * Translate a local ID to an NPC state ID.
@@ -195,6 +263,20 @@ POKEAGB_EXTERN void an_exclamation_mark(struct NpcState* npc, struct Object* obj
  * @address{BPRE,0805DF60}
  */
 POKEAGB_EXTERN u8 npc_id_by_local_id(u8 local_id, u8 map, u8 bank);
+
+/**
+ * set a direction an NPC will turn
+ *
+ * @address{BPRE,0805FBDC}
+ */
+POKEAGB_EXTERN void FieldObjectSetDirection(struct EventObject* npc, u8 direction);
+
+/**
+ * set x and y coords given a direction to move
+ *
+ * @address{BPRE,08063A20}
+ */
+POKEAGB_EXTERN void MoveCoords(u8 direction, s16 *x, s16 *y);
 
 /**
  * Translate a local ID to an NPC state ID.

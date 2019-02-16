@@ -10,7 +10,7 @@
 
 // this doesn't structured right at. Bit fields broken between bytes
 // and game loads it as though it's a byte. Please review
-struct FadeControl {
+struct PaletteFadeControl {
     u16 bg_pal_bitfield;
     u16 obj_pal_bitfield;
     u8 delay_counter:6;
@@ -45,7 +45,7 @@ union Color {
 /**
  * @address{BPRE,02037AB8}
  */
-struct FadeControl pal_fade_control;
+struct PaletteFadeControl gPaletteFade;
 
 /**
  * @address{BPRE,08150408}
@@ -70,12 +70,13 @@ POKEAGB_EXTERN void gpu_pal_apply_compressed(void* palette, u16 offset, u16 size
 /**
  * @address{BPRE,08070588}
  */
-POKEAGB_EXTERN bool fade_screen(u32 bitmask, s8 speed, u8 to, u8 from, u16 color);
+POKEAGB_EXTERN bool BeginNormalPaletteFade(u32 selectedPalettes, s8 delay, u8 startY, u8 targetY, u16 blendColor);
 
 /**
+ * fade_and_return_progress_probably
  * @address{BPRE,080704D0}
  */
-POKEAGB_EXTERN DEPRECATED void fade_and_return_progress_probably(void);
+POKEAGB_EXTERN DEPRECATED void UpdatePaletteFade(void);
 
 /**
  * @address{BPRE,08070474}

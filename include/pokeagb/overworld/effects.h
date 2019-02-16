@@ -42,7 +42,7 @@ POKEAGB_EXTERN u8* oe_exec(u8 animation);
  * Executes oe based on state and animation id
  * @address{BPRE,080836D8}
  */
-POKEAGB_EXTERN void oe_stop(struct Object* obj, u8 animation);
+POKEAGB_EXTERN void oe_stop(struct Sprite* s, u8 animation);
 
 
 /**

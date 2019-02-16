@@ -9,5 +9,6 @@
 #include "overworld/loading.h"
 #include "overworld/ow_ui.h"
 #include "overworld/effects.h"
+#include "overworld/movement_table.h"
 
 #endif /* POKEAGB_OVERWORLD_H_ */
