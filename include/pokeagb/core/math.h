@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#define ABS(x) (x) < 0 ? -(x) : (x)
+#define ABS(x) ((x) < 0 ? -(x) : (x))
 
 #define MAX(x, y) ((x) < (y) ? (y) : (x))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
@@ -17,11 +17,10 @@
 #define GET_SLOT_FROM_PTR(x, y, z) ((y - x) / z)
 
 /**
- * Background Music Player.
+ * Sin table
  * @address{BPRE,03007300}
  */
 
 extern s16 sin_angles[512];
 
 #endif /* POKEAGB_MATH_H_ */
-
