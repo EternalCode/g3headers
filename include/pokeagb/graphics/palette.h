@@ -8,6 +8,9 @@
 
 #include "../types.h"
 
+#define PLTT_BUFFER_SIZE 0x200
+#define PLTT_DECOMP_BUFFER_SIZE (PLTT_BUFFER_SIZE * 2)
+
 // this doesn't structured right at. Bit fields broken between bytes
 // and game loads it as though it's a byte. Please review
 struct PaletteFadeControl {
@@ -48,6 +51,16 @@ union Color {
 struct PaletteFadeControl gPaletteFade;
 
 /**
+ * @address{BPRE,020371F8}
+ */
+u16 gPlttBufferUnfaded[PLTT_BUFFER_SIZE];
+
+/**
+ * @address{BPRE,020375F8}
+ */
+u16 gPlttBufferFaded[PLTT_BUFFER_SIZE];
+
+/**
  * @address{BPRE,08150408}
  */
 POKEAGB_EXTERN u8* stdpal_get(u8 id);
@@ -60,12 +73,12 @@ u8* gpu_pal_tag_search_lower_boundary;
 /**
  * @address{BPRE,080703EC}
  */
-POKEAGB_EXTERN void gpu_pal_apply(void* palette, u16 offset, u16 size);
+POKEAGB_EXTERN void LoadPalette(void* palette, u16 offset, u16 size);
 
 /**
  * @address{BPRE,080703A8}
  */
-POKEAGB_EXTERN void gpu_pal_apply_compressed(void* palette, u16 offset, u16 size);
+POKEAGB_EXTERN void LoadPalette_compressed(void* palette, u16 offset, u16 size);
 
 /**
  * @address{BPRE,08070588}
