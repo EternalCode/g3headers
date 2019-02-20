@@ -340,7 +340,27 @@ POKEAGB_EXTERN void oac_pingpong(struct Sprite*);
  * @param scale The amplitude of the wave
  * @address{BPRE,08044E30}
  */
-POKEAGB_EXTERN s16 get_pingpong(s16 phase, u16 scale);
+POKEAGB_EXTERN s16 Sin(s16 phase, s16 scale);
+
+/**
+ * Cosine wave. Used to animate bouncing objects.
+ * @param phase The current phase or the x in Cos(x)
+ * @param scale The amplitude of the wave
+ * @address{BPRE,08044E4C}
+ */
+POKEAGB_EXTERN s16 Cos(s16 phase, s16 scale);
+
+/**
+ * Sin(x) with X in degrees
+ * @address{BPRE,08044E6C}
+ */
+POKEAGB_EXTERN s16 Sin2(u16 angle);
+
+/**
+ * Cos(x) with X in degrees
+ * @address{BPRE,08044EB0}
+ */
+POKEAGB_EXTERN s16 Cos2(u16 angle);
 
 /**
  * Reset affine. This doesn't reset the rotscale tables
