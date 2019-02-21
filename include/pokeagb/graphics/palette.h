@@ -61,6 +61,16 @@ u16 gPlttBufferUnfaded[PLTT_BUFFER_SIZE];
 u16 gPlttBufferFaded[PLTT_BUFFER_SIZE];
 
 /**
+ * @address{BPRE,020377F8}
+ */
+u16 gPlttBufferObjFaded[PLTT_BUFFER_SIZE];
+
+/**
+ * @address{BPRE,020373F8}
+ */
+u16 gPlttBufferObjUnFaded[PLTT_BUFFER_SIZE];
+
+/**
  * @address{BPRE,08150408}
  */
 POKEAGB_EXTERN u8* stdpal_get(u8 id);
