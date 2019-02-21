@@ -168,6 +168,16 @@ POKEAGB_EXTERN void bgid_mod_y_offset(u8 bgid, s32 delta, u8 dir);
  */
 POKEAGB_EXTERN void bgid_mod_x_offset(u8 bgid, s32 delta, u8 dir);
 
+/**
+ * @address{BPRE,08001CCC}
+ */
+POKEAGB_EXTERN s16 bgid_get_x_offset(u8 bgid);
+
+/**
+ * @address{BPRE,08001E44}
+ */
+POKEAGB_EXTERN s16 bgid_get_y_offset(u8 bgid);
+
 struct REG_BGCNT {
 	u16 priority : 2;
 	u16 char_index : 2; // 0x6000000 + char_index * 0x4000
