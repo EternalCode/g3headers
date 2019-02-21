@@ -26,8 +26,8 @@ struct BgConfig2 {
     u16 target_tile;
 	u16 padding;
     u8 *tilemap;
-    u32 x;
-    u32 y;
+    s32 x;
+    s32 y;
 };
 
 struct mapblock_16color {
@@ -161,22 +161,22 @@ POKEAGB_EXTERN void textbox_something(void);
 /**
  * @address{BPRE,08001D08}
  */
-POKEAGB_EXTERN void bgid_mod_y_offset(u8 bgid, s32 delta, u8 dir);
+POKEAGB_EXTERN void ChangeBgY(u8 bgid, s32 delta, u8 dir);
 
 /**
  * @address{BPRE,08001B90}
  */
-POKEAGB_EXTERN void bgid_mod_x_offset(u8 bgid, s32 delta, u8 dir);
+POKEAGB_EXTERN void ChangeBgX(u8 bgid, s32 delta, u8 dir);
 
 /**
  * @address{BPRE,08001CCC}
  */
-POKEAGB_EXTERN s16 bgid_get_x_offset(u8 bgid);
+POKEAGB_EXTERN s32 bgid_get_x_offset(u8 bgid);
 
 /**
  * @address{BPRE,08001E44}
  */
-POKEAGB_EXTERN s16 bgid_get_y_offset(u8 bgid);
+POKEAGB_EXTERN s32 bgid_get_y_offset(u8 bgid);
 
 struct REG_BGCNT {
 	u16 priority : 2;
