@@ -317,6 +317,12 @@ POKEAGB_EXTERN void obj_free(struct Sprite *obj);
  */
 POKEAGB_EXTERN void FreeSpriteTilesByTag(u16 tag);
 
+
+/**
+ * @address{BPRE,0800885C}
+ */
+POKEAGB_EXTERN u16 GetTileTagBySheet(u16 sheet);
+
 /**
  * @address{BPRE,080073DC}
  */
@@ -409,6 +415,12 @@ POKEAGB_EXTERN void obj_rotscale_play(struct Sprite* obj, u8 table_index);
  * @address{BPRE,0800838C}
  */
 POKEAGB_EXTERN void obj_anim_image_start(void);
+
+/**
+ * set oam animation start
+ * @address{BPRE,08007824}
+ */
+POKEAGB_EXTERN void AnimateSprite(struct Sprite*);
 
 POKEAGB_END_DECL
 
