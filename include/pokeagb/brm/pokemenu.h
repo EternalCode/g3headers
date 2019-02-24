@@ -8,6 +8,21 @@
 
 POKEAGB_BEGIN_DECL
 
+
+/**
+ * BRM address
+ * @address{BPRE,0203b0a0}
+ */
+extern u32 brm_addr;
+
+/**
+ * BRM data pointer
+ * @address{BPRE,0203b09c}
+ */
+extern u32 brm_data;
+
+
+
 /**
  * Clears and frees the given rboxid, and prepares it for printing.
  * @address{BPRE,08121CE4}
@@ -15,58 +30,28 @@ POKEAGB_BEGIN_DECL
 POKEAGB_EXTERN void ClearAndPrepareTextbox(u32* PointerToTextbox);
 
 /**
- * Chooses a String to display in the BRM given table index (eg. fly is 0xD)
+ * displays a string in the brm given an index
  * @address{BPRE,08121D0C}
  */
-POKEAGB_EXTERN void ChoosePokemonStrings(u8 StringIndex); 
-
-/**
- * perform flash from the brm pokemenu
- * @address{BPRE,08124954}
- */
-POKEAGB_EXTERN void BRMDoHMFlash(); 
-
-/**
- * perform surf from the brm pokemenu
- * @address{BPRE,08124A0C}
- */
-POKEAGB_EXTERN void BRMDoHMSurf(); 
-
-/**
- * exit to overworld from brm menu (default opt)
- * @address{BPRE,0812475c}
- */
-POKEAGB_EXTERN void BRMExitToOverworld(u8 task_id, u8 brm_index);
-
-/**
- * do fly from brm menu
- * @address{BPRE,0812474c}
- */
-POKEAGB_EXTERN void BRMDoHMFly(u8 task_id);
-
-/**
- * do teleport from brm menu
- * @address{BPRE,081246b4}
- */
-POKEAGB_EXTERN void BRMDoHMTeleport(u8 task_id, u8 brm_index);
-
-/**
- * do dig from brm menu
- * @address{BPRE,081246f0}
- */
-POKEAGB_EXTERN void BRMDoHMDig(u8 task_id, u8 brm_index);
-
-/**
- * do milk drink from brm menu
- * @address{BPRE,081246ac}
- */
-POKEAGB_EXTERN void BRMDoMilkDrink(u8 task_id);
+POKEAGB_EXTERN void ChoosePokemonStrings(u8 StringIndex);
 
 /**
  * prepare to do flash from the pokemenu
  * @address{BPRE,080c9b2c}
  */
 POKEAGB_EXTERN bool BRMPrepareFlash();
+
+/**
+ * determine result of using flash in BRM
+ * @address{BPRE,08124954}
+ */
+POKEAGB_EXTERN void ChooseFlashBRMString();
+
+/**
+ * determine result of using surf in BRM
+ * @address{BPRE,08124A0C}
+ */
+POKEAGB_EXTERN void ChooseSurfBRMString();
 
 /**
  * prepare/check if able to do cut from the pokemenu
@@ -79,6 +64,13 @@ POKEAGB_EXTERN bool BRMPrepareCut();
  * @address{BPRE,08124a8c}
  */
 POKEAGB_EXTERN bool BRMPrepareFly();
+
+
+/**
+ * do fly
+ * @address{BPRE,080c4ef8}
+ */
+POKEAGB_EXTERN void PerformBRMFly();
 
 /**
  * prepare/check if able to do strength from the pokemenu
@@ -129,8 +121,59 @@ POKEAGB_EXTERN bool BRMPrepareSoftboiled_MilkDrink();
 POKEAGB_EXTERN bool BRMPrepareSweetScent();
 
 
+/**
+ * display a message in the BRM (used in displaying badge error msg)
+ * @address{BPRE,081202f8}
+ */
+POKEAGB_EXTERN void BRMDisplayMessageTask(u32* StringPointer, u8 task_priority);
 
-#define TaskBRMResolveFromContext 0x0812492c
+
+/**
+ * resolve BRM tasks
+ * @address{BPRE,0812492c}
+ */
+POKEAGB_EXTERN void TaskBRMResolveFromContext(u8 task_id);
+
+/**
+ * reset the pokemenu/brm?
+ * @address{BPRE,081203b8}
+ */
+POKEAGB_EXTERN void TaskResetBRM(u8 task_id);
+
+
+/**
+ * fade pal in preparation for task in brm
+ * @address{BPRE,0811fa78}
+ */
+POKEAGB_EXTERN void TaskBRMPalFade(u8 task_id);
+
+
+
+/**
+ * get selected poke in brm
+ * @address{BPRE,0811fb0c}
+ */
+POKEAGB_EXTERN u8 brm_get_pokemon_selection();
+
+/**
+ * get selected poke in brm
+ * @address{BPRE,08124BB0}
+ */
+POKEAGB_EXTERN void BRMPrepareOverworldExit(u32* PokeAddr, u8 brm_index);
+
+
+/**
+ * create task to display a string in BRM - used in teleport BRM func
+ * @address{BPRE,081247c4}
+ */
+POKEAGB_EXTERN void BRMStringBufferTask(u8 task_id);
+
+
+/**
+ * task for milk drink / softboiled
+ * @address{BPRE,080e56dc}
+ */
+POKEAGB_EXTERN void TaskSelectBRMPokeForHeal(u8 task_id);
 
 
 
