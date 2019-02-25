@@ -12,14 +12,13 @@
 #define SCREEN_HEIGHT 160
 
 struct BgConfig {
-	u16 bgid : 2;
-	u16 character_base : 2;
-	u16 map_base : 5;
-	u16 size : 2;
-	u16 palette : 1;
-	u16 priority : 2;
-	u16 b_padding : 2; // bit field padding
-	u16 padding;
+	u32 bgid : 2;
+	u32 character_base : 2;
+	u32 map_base : 5;
+	u32 size : 2;
+	u32 palette : 1;
+	u32 priority : 2;
+	u32 basetile : 10;
 };
 
 struct BgConfig2 {

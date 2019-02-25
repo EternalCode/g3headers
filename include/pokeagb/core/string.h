@@ -280,10 +280,9 @@ POKEAGB_EXTERN void box_curved(u8 rboxid, u8 player_closed);
 
 /**
  *
- * address{BPRE,080D87BC}
- *
+ * @address{BPRE,080D87BC} 
+ */
 POKEAGB_EXTERN void ShowBattleMessage(pchar* str, u8 unk);
-*/
 
 /**
  *
