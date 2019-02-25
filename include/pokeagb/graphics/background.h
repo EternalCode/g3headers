@@ -58,11 +58,33 @@ extern u16* gBGTilemapBuffers1;
  */
 extern struct BgConfig2 bg_config2[4];
 
+/**
+ * @address{BPRE,030008D0}
+ */
+extern struct BgConfig bg_config[4];
+
 
 /**
  * @address{BPRE,08001618}
  */
 POKEAGB_EXTERN void gpu_tile_bg_drop_all_sets(u8);
+
+
+/**
+ * @address{BPRE,0800108C}
+ */
+POKEAGB_EXTERN void gpu_bg_config_set_by_serialized(u8);
+
+
+/**
+ * @address{BPRE,080010B8}
+ */
+POKEAGB_EXTERN void SetBgControlAttributes(u8 bg, u8 charBaseIndex, u8 mapBaseIndex, u8 screenSize, u8 paletteMode, u8 priority, u8 mosaic, u8 wraparound);
+
+/**
+ * @address{BPRE,080019E4}
+ */
+POKEAGB_EXTERN void SetBgControlAttribute(u8 bg, u8 mode, u8 value);
 
 /**
  * @address{BPRE,080F67B8}
@@ -152,11 +174,6 @@ POKEAGB_EXTERN void copy_queue_process(void);
  * @address{BPRE,080563F0}
  */
 POKEAGB_EXTERN void overworld_free_bgmaps(void);
-
-/**
- * @address{BPRE,08002DE8}
- */
-POKEAGB_EXTERN void textbox_something(void);
 
 /**
  * @address{BPRE,08001D08}
