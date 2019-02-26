@@ -236,6 +236,12 @@ POKEAGB_EXTERN u16 AddTextPrinterParameterized(u8 rboxid, u8 font, const pchar* 
  */
 POKEAGB_EXTERN u8 rboxid_print(u8 id, u8 font, u8 x, u8 y, struct TextColor* color,
                                u8 speed, const pchar* s);
+							   
+/**
+ * outline a textbox
+ * @address{BPRE,0810F2E8}
+ */
+POKEAGB_EXTERN void rbox_outline(u8 box_id, u8, u8, u8);
 
 /**
  * Get the width in pixels of a string.

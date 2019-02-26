@@ -9,5 +9,6 @@
 #include "pokemon.h"
 #include "save.h"
 #include "battle.h"
+#include "brm.h"
 
 #endif /* POKEAGB_H_ */
