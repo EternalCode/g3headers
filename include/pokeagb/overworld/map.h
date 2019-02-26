@@ -610,6 +610,12 @@ POKEAGB_EXTERN void GetInFrontOfPlayerPosition(struct MapPosition* pos);
  */
 POKEAGB_EXTERN void log_coords_relative_camera(s32* x, s32* y, u8 size_x, u8 size_y);
 
+/**
+ * buffer current map name
+ * @address{BPRE,080C4DF8}
+ */
+POKEAGB_EXTERN u8 GetMapName(u32* AddrToBuffer, u8 MapNameID );
+
 POKEAGB_END_DECL
 
 #endif /* POKEAGB_OVERWORLD_MAP_H_ */
