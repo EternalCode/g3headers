@@ -474,11 +474,16 @@ POKEAGB_EXTERN bool check_item(enum Item item, u8 quantity);
 POKEAGB_EXTERN void BagClosingAnimation(void);
 
 /**
- * Returns true if the quantity of the item in the player's bag is at
- * least the specified amount.
+ * Task which exits the bag
  * @address{BPRE,08108B50}
  */
 POKEAGB_EXTERN void TaskExitBag(u8 taskId);
+
+/**
+ * Function to open the bag
+ * @address{BPRE,08107DB4}
+ */
+POKEAGB_EXTERN void GoToBagMenu(u8 mode, u8 pocketId, MainCallback postExitMenuMainCallback2);
 
 POKEAGB_END_DECL
 
