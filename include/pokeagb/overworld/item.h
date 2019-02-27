@@ -468,6 +468,13 @@ POKEAGB_EXTERN u16 get_item_quantity(enum Item item);
 POKEAGB_EXTERN bool check_item(enum Item item, u8 quantity);
 
 /**
+ * Returns true if the quantity of the item in the player's bag is at
+ * least the specified amount.
+ * @address{BPRE,0809A1D8}
+ */
+POKEAGB_EXTERN bool BagRemoveItem(enum Item item, u8 quantity);
+
+/**
  * The animation made by collapsing mindows when exiting the bag
  * @address{BPRE,08108CB4}
  */
