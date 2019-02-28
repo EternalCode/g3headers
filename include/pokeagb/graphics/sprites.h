@@ -357,7 +357,7 @@ POKEAGB_EXTERN s16 Sin(s16 phase, s16 scale);
 POKEAGB_EXTERN s16 Cos(s16 phase, s16 scale);
 
 /**
- * Sin(x) with X in degrees
+ * Sin(x) << 16. With "x" in degrees
  * @address{BPRE,08044E6C}
  */
 POKEAGB_EXTERN s16 Sin2(u16 angle);
