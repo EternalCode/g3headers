@@ -408,7 +408,7 @@ POKEAGB_EXTERN void FreeSpriteOamMatrix(struct Sprite*);
  * Resets the rotscale animation for an object and starts the animation from the specified rotscale table index
  * @address{BPRE,0800843C}
  */
-POKEAGB_EXTERN void obj_rotscale_play(struct Sprite* obj, u8 table_index);
+POKEAGB_EXTERN void StartSpriteAffineAnim(struct Sprite* obj, u8 table_index);
 
 /**
  * set oam animation start

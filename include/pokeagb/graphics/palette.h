@@ -102,6 +102,11 @@ POKEAGB_EXTERN bool BeginNormalPaletteFade(u32 selectedPalettes, s8 delay, u8 st
 POKEAGB_EXTERN DEPRECATED void UpdatePaletteFade(void);
 
 /**
+ * @address{BPRE,08071510}
+ */
+POKEAGB_EXTERN void BlendPalettesUnfaded(u32 selectedPalettes, u8 coeff, u16 color);
+
+/**
  * @address{BPRE,08070474}
  */
 POKEAGB_EXTERN void gpu_pal_upload(void);
