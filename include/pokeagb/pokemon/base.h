@@ -139,11 +139,31 @@ extern u8 build_edition_identifier;
 extern u8 game_language;
 
 /**
+ *
+ * @address{BPRE,0203B16E}
+ */
+extern u16 gSummarySelectedMove;
+
+/**
  * gets Pokemon's weight if index = 1
  *
  * @address{BPRE, 08088E38}
  */
  extern u32 pokemon_get_weight(u16 species, u8 index);
+
+/**
+ * Show the move select screen in the pokemon summary
+ *
+ * @address{BPRE, 08134738}
+ */
+ extern void ShowSelectMovePokemonSummaryScreen(void *mons, u8 monIndex, u8 maxMonIndex, void (*callback)(void), u16 move);
+
+/**
+ * Get the selected move slot from the summary screen
+ *
+ * @address{BPRE, 08138B2C}
+ */
+ extern u8 SummaryMoveSelectedSlot(void);
 
 
 POKEAGB_END_DECL
