@@ -432,7 +432,7 @@ POKEAGB_EXTERN u8 cur_mapdata_get_middle2bit_at(s16 x, s16 y);
  * Fetch the map header for the given map.
  * @address{BPRE,08055238}
  */
-POKEAGB_EXTERN struct MapHeader* mapheader_by_mapnumbers(u8 bank, u8 map);
+POKEAGB_EXTERN struct MapHeader* mapheaderByMapnumbers(u8 bank, u8 map);
 
 
 /**

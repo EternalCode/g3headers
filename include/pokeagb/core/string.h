@@ -150,25 +150,25 @@ POKEAGB_EXTERN void textbox_task_delete_scroll_arrows(u8 task_id);
  * Generic buffer for strings.
  * @address{BPRE,02021CD0}
  */
-extern pchar fcode_buffer2[FCODE_BUFFER_SIZE];
+extern pchar fcodeBuffer2[FCODE_BUFFER_SIZE];
 
 /**
  * Generic buffer for strings.
  * @address{BPRE,02021CF0}
  */
-extern pchar fcode_buffer3[FCODE_BUFFER_SIZE];
+extern pchar fcodeBuffer3[FCODE_BUFFER_SIZE];
 
 /**
  * Generic buffer for strings.
  * @address{BPRE,02021D04}
  */
-extern pchar fcode_buffer4[FCODE_BUFFER_SIZE];
+extern pchar fcodeBuffer4[FCODE_BUFFER_SIZE];
 
 /**
  * Generic buffer also used for strings
  * @address{BPRE,02021D18}
  */
-extern pchar string_buffer[STRING_BUFFER_SIZE];
+extern pchar stringBuffer[STRING_BUFFER_SIZE];
 
 /**
  * Copies the 0xFF terminated string from source to desination.

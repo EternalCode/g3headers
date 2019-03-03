@@ -8,35 +8,24 @@
 
 POKEAGB_BEGIN_DECL
 
+struct MenuChoiceStruct {
+	u8 ChoiceX;
+	u8 ChoiceY;
+	u8 ChoiceCurrent;
+	u8 ChoiceMin;
+	u8 ChoiceMax;
+	u8 ChoiceRboxId;
+	u16 ChoiceFboxId;
+	u16 ChoiceYStride;
+};
+
+ASSERT_SIZEOF(struct MenuChoiceStruct, 10);
+
 /**
- * choice_x
+ * Choice Structure
  * @address{BPRE,0203ade4}
  */
-extern u8 choice_x;
-
-/**
- * choice_y
- * @address{BPRE,0203ade5}
- */
-extern u8 choice_y;
-
-/**
- * choice_curr
- * @address{BPRE,0203ade6}
- */
-extern u8 choice_curr;
-
-/**
- * choice_min
- * @address{BPRE,0203ade7}
- */
-extern u8 choice_min;
-
-/**
- * choice_max
- * @address{BPRE,0203ade8}
- */
-extern u8 choice_max;
+extern struct MenuChoiceStruct MenuChoices;
 
 
 POKEAGB_END_DECL

@@ -50,7 +50,7 @@ POKEAGB_EXTERN void c2_return_overworld_music_scripts_cont(void);
  * Secondary overworld callback (callback 2), return to overworld and continue scripts+music.
  * @address{BPRE,080567DC}
  */
-POKEAGB_EXTERN void exit_to_overworld_2_switch(void);
+POKEAGB_EXTERN void exitToOverworldSwitch2(void);
 
 /**
  * Called in c1_overworld if c2 running and not prev quest
