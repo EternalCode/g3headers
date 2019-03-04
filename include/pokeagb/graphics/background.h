@@ -12,22 +12,21 @@
 #define SCREEN_HEIGHT 160
 
 struct BgConfig {
-	u16 bgid : 2;
-	u16 character_base : 2;
-	u16 map_base : 5;
-	u16 size : 2;
-	u16 palette : 1;
-	u16 priority : 2;
-	u16 b_padding : 2; // bit field padding
-	u16 padding;
+	u32 bgid : 2;
+	u32 character_base : 2;
+	u32 map_base : 5;
+	u32 size : 2;
+	u32 palette : 1;
+	u32 priority : 2;
+	u32 basetile : 10;
 };
 
 struct BgConfig2 {
     u16 target_tile;
 	u16 padding;
     u8 *tilemap;
-    u32 x;
-    u32 y;
+    s32 x;
+    s32 y;
 };
 
 struct mapblock_16color {
@@ -58,11 +57,33 @@ extern u16* gBGTilemapBuffers1;
  */
 extern struct BgConfig2 bg_config2[4];
 
+/**
+ * @address{BPRE,030008D0}
+ */
+extern struct BgConfig bg_config[4];
+
 
 /**
  * @address{BPRE,08001618}
  */
 POKEAGB_EXTERN void gpu_tile_bg_drop_all_sets(u8);
+
+
+/**
+ * @address{BPRE,0800108C}
+ */
+POKEAGB_EXTERN void gpu_bg_config_set_by_serialized(u8);
+
+
+/**
+ * @address{BPRE,080010B8}
+ */
+POKEAGB_EXTERN void SetBgControlAttributes(u8 bg, u8 charBaseIndex, u8 mapBaseIndex, u8 screenSize, u8 paletteMode, u8 priority, u8 mosaic, u8 wraparound);
+
+/**
+ * @address{BPRE,080019E4}
+ */
+POKEAGB_EXTERN void SetBgControlAttribute(u8 bg, u8 mode, u8 value);
 
 /**
  * @address{BPRE,080F67B8}
@@ -154,19 +175,24 @@ POKEAGB_EXTERN void copy_queue_process(void);
 POKEAGB_EXTERN void overworld_free_bgmaps(void);
 
 /**
- * @address{BPRE,08002DE8}
- */
-POKEAGB_EXTERN void textbox_something(void);
-
-/**
  * @address{BPRE,08001D08}
  */
-POKEAGB_EXTERN void bgid_mod_y_offset(u8 bgid, s32 delta, u8 dir);
+POKEAGB_EXTERN void ChangeBgY(u8 bgid, s32 delta, u8 dir);
 
 /**
  * @address{BPRE,08001B90}
  */
-POKEAGB_EXTERN void bgid_mod_x_offset(u8 bgid, s32 delta, u8 dir);
+POKEAGB_EXTERN void ChangeBgX(u8 bgid, s32 delta, u8 dir);
+
+/**
+ * @address{BPRE,08001CCC}
+ */
+POKEAGB_EXTERN s32 bgid_get_x_offset(u8 bgid);
+
+/**
+ * @address{BPRE,08001E44}
+ */
+POKEAGB_EXTERN s32 bgid_get_y_offset(u8 bgid);
 
 struct REG_BGCNT {
 	u16 priority : 2;

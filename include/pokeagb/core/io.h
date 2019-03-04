@@ -711,6 +711,44 @@ extern volatile __writeonly u8 REG_HALTCNT;
 #define DISPSTAT_VBLANK_IRQ (1 << 3)
 #define DISPSTAT_HBLANK_IRQ (1 << 4)
 #define DISPSTAT_VCOUNT_IRQ (1 << 5)
+
+/**
+ * BGCNT fields
+ */
+ #define BGCNT_PRIORITY0 0
+ #define BGCNT_PRIORITY1 1
+ #define BGCNT_PRIORITY2 2
+ #define BGCNT_PRIORITY3 3
+ #define BGCNT_TILESTART0 (0 << 2) // Address = 0x6000000 + S * 0x4000
+ #define BGCNT_TILESTART1 (1 << 2)
+ #define BGCNT_TILESTART2 (2 << 2)
+ #define BGCNT_TILESTART3 (3 << 2)
+ // BGCNT is unused for 2 bits between these properties
+ #define BGCNT_MOSAIC (1 << 6)
+ #define BGCNT_COLOR (1 << 7) // 16 or 256 mode
+ #define BGCNT_MAPSTART(M) (M << 8) // Address = 0x6000000 + M * 0x800
+ #define BGCNT_23OVERFLOW (1 << 13)
+
+ /*
+    For "text" backgrounds:
+    00 : 256x256 (32x32 tiles)
+    01 : 512x256 (64x32 tiles)
+    10 : 256x512 (32x64 tiles)
+    11 : 512x512 (64x64 tiles)
+
+    For rotational backgrounds:
+    00 : 128x128 (16x16 tiles)
+    01 : 256x256 (32x32 tiles)
+    10 : 512x512 (64x64 tiles)
+    11 : 1024x1024 (128x128 tiles)
+*/
+ #define BGCNT_TILEMAPSIZE0 (0 << 14)
+ #define BGCNT_TILEMAPSIZE1 (1 << 14)
+ #define BGCNT_TILEMAPSIZE2 (2 << 14)
+ #define BGCNT_TILEMAPSIZE3 (3 << 14)
+
+
+
 /**
  * @param mode Interrupts to enable
  * @param vcount VCOUNT value to trigger VCOUNT IRQ at

@@ -225,10 +225,10 @@ POKEAGB_EXTERN u8 rbox_to_vram(void* vram_addr, void* src_pixels, u8 tiles_to_co
 
 
 /**
- * Allocates a textbox and returns its ID.
+ * Creates text printing for a message box
  * @address{BPRE,08002C48}
  */
-POKEAGB_EXTERN u8 rboxid_draw_text(u8 id, u8 font, const pchar* s, u8 x, u8 y, u8 speed,
+POKEAGB_EXTERN u16 AddTextPrinterParameterized(u8 rboxid, u8 font, const pchar* s, u8 x, u8 y, u8 speed,
                                    void* callback);
 
 /**
@@ -286,10 +286,9 @@ POKEAGB_EXTERN void box_curved(u8 rboxid, u8 player_closed);
 
 /**
  *
- * @address{BPRE,080D87BC}
+ * @address{BPRE,080D87BC} 
  */
 POKEAGB_EXTERN void ShowBattleMessage(pchar* str, u8 unk);
-
 
 /**
  *

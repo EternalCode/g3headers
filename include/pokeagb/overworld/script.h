@@ -209,19 +209,19 @@ extern u16 var_800B;
 
 /**
  * Script temporary variable 0x800C
- * @address{BPRE,020370BE}
+ * @address{BPRE,020370D4}
  */
 extern u16 var_800C;
 
 /**
  * Script temporary variable 0x800D
- * @address{BPRE,020370BE}
+ * @address{BPRE,020370D0}
  */
 extern u16 var_800D;
 
 /**
  * Script temporary variable 0x800E
- * @address{BPRE,020370BE}
+ * @address{BPRE,02037030}
  */
 extern u16 var_800E;
 
@@ -242,6 +242,12 @@ extern u16 var_8010;
  * @address{BPRE,020370D8}
  */
 extern u16 var_8011;
+
+/**
+ * Script temporary variable 0x80XX series pointers
+ * @address{BPRE,0815FD0C}
+ */
+extern const u16* var_80xx[];
 
 /**
  * Amount of pokemon in player's party

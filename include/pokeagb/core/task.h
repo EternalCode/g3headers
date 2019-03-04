@@ -37,7 +37,7 @@ struct Task {
  * @return Task ID
  * @address{BPRE,0807741C}
  */
-POKEAGB_EXTERN u8 task_add(TaskCallback func, u8 priority);
+POKEAGB_EXTERN u8 CreateTask(TaskCallback func, u8 priority);
 
 /**
  * Delete a task.

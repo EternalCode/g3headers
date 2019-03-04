@@ -10,6 +10,8 @@
 #include <pokeagb/common.h>
 
 #define ADDR_VRAM 0x06000000
+#define ADDR_PALRAM 0x05000000
+#define ADDR_OAMPALRAM 0x05000200
 
 POKEAGB_BEGIN_DECL
 

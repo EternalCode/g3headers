@@ -317,6 +317,12 @@ POKEAGB_EXTERN void obj_free(struct Sprite *obj);
  */
 POKEAGB_EXTERN void FreeSpriteTilesByTag(u16 tag);
 
+
+/**
+ * @address{BPRE,0800885C}
+ */
+POKEAGB_EXTERN u16 GetTileTagBySheet(u16 sheet);
+
 /**
  * @address{BPRE,080073DC}
  */
@@ -340,7 +346,27 @@ POKEAGB_EXTERN void oac_pingpong(struct Sprite*);
  * @param scale The amplitude of the wave
  * @address{BPRE,08044E30}
  */
-POKEAGB_EXTERN s16 get_pingpong(s16 phase, u16 scale);
+POKEAGB_EXTERN s16 Sin(s16 phase, s16 scale);
+
+/**
+ * Cosine wave. Used to animate bouncing objects.
+ * @param phase The current phase or the x in Cos(x)
+ * @param scale The amplitude of the wave
+ * @address{BPRE,08044E4C}
+ */
+POKEAGB_EXTERN s16 Cos(s16 phase, s16 scale);
+
+/**
+ * Sin(x) << 16. With "x" in degrees
+ * @address{BPRE,08044E6C}
+ */
+POKEAGB_EXTERN s16 Sin2(u16 angle);
+
+/**
+ * Cos(x) with X in degrees
+ * @address{BPRE,08044EB0}
+ */
+POKEAGB_EXTERN s16 Cos2(u16 angle);
 
 /**
  * Reset affine. This doesn't reset the rotscale tables
@@ -382,13 +408,19 @@ POKEAGB_EXTERN void FreeSpriteOamMatrix(struct Sprite*);
  * Resets the rotscale animation for an object and starts the animation from the specified rotscale table index
  * @address{BPRE,0800843C}
  */
-POKEAGB_EXTERN void obj_rotscale_play(struct Sprite* obj, u8 table_index);
+POKEAGB_EXTERN void StartSpriteAffineAnim(struct Sprite* obj, u8 table_index);
 
 /**
  * set oam animation start
  * @address{BPRE,0800838C}
  */
 POKEAGB_EXTERN void obj_anim_image_start(void);
+
+/**
+ * set oam animation start
+ * @address{BPRE,08007824}
+ */
+POKEAGB_EXTERN void AnimateSprite(struct Sprite*);
 
 POKEAGB_END_DECL
 
