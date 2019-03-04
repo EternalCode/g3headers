@@ -13,13 +13,13 @@ POKEAGB_BEGIN_DECL
  * BRM address
  * @address{BPRE,0203b0a0}
  */
-extern u32 AddrBRM;
+extern u32 gAddrBRM;
 
 /**
  * BRM data pointer
  * @address{BPRE,0203b09c}
  */
-extern u32 PtrBrmData;
+extern u32 gPtrBrmData;
 
 
 /**

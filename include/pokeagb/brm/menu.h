@@ -9,14 +9,14 @@
 POKEAGB_BEGIN_DECL
 
 struct MenuChoiceStruct {
-	u8 ChoiceX;
-	u8 ChoiceY;
-	u8 ChoiceCurrent;
-	u8 ChoiceMin;
-	u8 ChoiceMax;
-	u8 ChoiceRboxId;
-	u16 ChoiceFboxId;
-	u16 ChoiceYStride;
+	u8 choiceX;
+	u8 choiceY;
+	u8 choiceCurrent;
+	u8 choiceMin;
+	u8 choiceMax;
+	u8 choiceRboxId;
+	u16 choiceFboxId;
+	u16 choiceYStride;
 };
 
 ASSERT_SIZEOF(struct MenuChoiceStruct, 10);
@@ -25,7 +25,7 @@ ASSERT_SIZEOF(struct MenuChoiceStruct, 10);
  * Choice Structure
  * @address{BPRE,0203ade4}
  */
-extern struct MenuChoiceStruct MenuChoices;
+extern struct MenuChoiceStruct gMenuChoices;
 
 
 POKEAGB_END_DECL
