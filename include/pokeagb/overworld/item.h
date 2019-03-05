@@ -492,6 +492,13 @@ POKEAGB_EXTERN void TaskExitBag(u8 taskId);
  */
 POKEAGB_EXTERN void GoToBagMenu(u8 mode, u8 pocketId, MainCallback postExitMenuMainCallback2);
 
+/**
+ * check if hold item is type Mail
+ * @address{BPRE,080980F8}
+ */
+POKEAGB_EXTERN bool itemIdIsMail(u16 itemId);
+
+
 POKEAGB_END_DECL
 
 #endif /* POKEAGB_OVERWORLD_ITEM_H_ */
