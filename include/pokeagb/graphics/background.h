@@ -229,7 +229,7 @@ extern struct REG_BGCNT BG_CNT[4];
 /**
  * @address{BPRE,080F67A4}
  */
-POKEAGB_EXTERN void bgid_mark_for_sync(u8 bgid);
+POKEAGB_EXTERN void bgIdMarkForSync(u8 bgid);
 
 /**
  * BG Rotscale maybe

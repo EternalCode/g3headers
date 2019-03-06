@@ -263,7 +263,7 @@ POKEAGB_EXTERN void box_related_one(u8, u8, pchar *, u8, u8, u8, u8, u8);
  * Allocates a textbox and returns its ID.
  * @address{BPRE,08003FA0}
  */
-POKEAGB_EXTERN u8 rboxid_tilemap_update(u8 id);
+POKEAGB_EXTERN u8 rboxIdTilemapUpdate(u8 id);
 
 /**
  * Clean a textbox. Should be called before rboxid_free.
@@ -275,7 +275,7 @@ POKEAGB_EXTERN u8 rboxid_clean(u8 id, bool update);
  * Free a textbox.
  * @address{BPRE,08003E3C}
  */
-POKEAGB_EXTERN u8 rboxid_free(u8 id);
+POKEAGB_EXTERN u8 rboxIdFree(u8 id);
 
 /**
  *
@@ -395,6 +395,25 @@ POKEAGB_EXTERN void bag_print_and_click_sound(u8 taskid);
  * @address{BPRE,08108E70}
  */
 POKEAGB_EXTERN void PrintErrorMsgBag(u8 taskid, u8 fboxid, pchar* str, TaskCallback textHandler);
+
+/**
+ * clear tilemap data for rboxes
+ * @address{BPRE,080040b8}
+ */
+POKEAGB_EXTERN void clearWindowTilemap(u8 boxId);
+
+/**
+ * create blue banner box
+ * @address{BPRE,08112f18}
+ */
+POKEAGB_EXTERN void createBannerBox(u8 boxId);
+
+/**
+ * get fbox ID field
+ * @address{BPRE,080f79d8}
+ */
+POKEAGB_EXTERN u8 fBoxIdGetField(u8 fBoxId, u8 fboxArrayIndex);
+
 
 
 POKEAGB_END_DECL
