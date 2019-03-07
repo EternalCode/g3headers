@@ -614,7 +614,7 @@ POKEAGB_EXTERN void log_coords_relative_camera(s32* x, s32* y, u8 size_x, u8 siz
  * buffer current map name
  * @address{BPRE,080C4DF8}
  */
-POKEAGB_EXTERN u8 GetMapName(u32* AddrToBuffer, u8 MapNameID );
+POKEAGB_EXTERN u8 GetMapName(pchar* buffer, u8 MapNameID);
 
 POKEAGB_END_DECL
 

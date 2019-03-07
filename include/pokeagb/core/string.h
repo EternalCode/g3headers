@@ -236,7 +236,7 @@ POKEAGB_EXTERN u16 AddTextPrinterParameterized(u8 rboxid, u8 font, const pchar* 
  */
 POKEAGB_EXTERN u8 rboxid_print(u8 id, u8 font, u8 x, u8 y, struct TextColor* color,
                                u8 speed, const pchar* s);
-							   
+
 /**
  * outline a textbox
  * @address{BPRE,0810F2E8}
@@ -286,7 +286,7 @@ POKEAGB_EXTERN void box_curved(u8 rboxid, u8 player_closed);
 
 /**
  *
- * @address{BPRE,080D87BC} 
+ * @address{BPRE,080D87BC}
  */
 POKEAGB_EXTERN void ShowBattleMessage(pchar* str, u8 unk);
 
@@ -337,7 +337,7 @@ POKEAGB_EXTERN u32 rboxid_get_field(u8 rid, u8 field);
  * string substitution based on assigned buffer ids
  * @address{BPRE,0812E5A4}
  */
-POKEAGB_EXTERN void rboxid_add_812E5A4(u8, u8, u8, u8, u8, u8, u32*, u8, pchar*);
+POKEAGB_EXTERN void rboxid_add_812E5A4(u8, u8, u8, u8, u8, u8, struct TextColor* color, u8, pchar*);
 
 
 /**
@@ -395,6 +395,25 @@ POKEAGB_EXTERN void bag_print_and_click_sound(u8 taskid);
  * @address{BPRE,08108E70}
  */
 POKEAGB_EXTERN void PrintErrorMsgBag(u8 taskid, u8 fboxid, pchar* str, TaskCallback textHandler);
+
+/**
+ * clear tilemap data for rboxes
+ * @address{BPRE,080040B8}
+ */
+POKEAGB_EXTERN void CreateBannerBox(u8 boxId);
+
+/**
+ * create blue banner box
+ * @address{BPRE,08112F18}
+ */
+POKEAGB_EXTERN void CreateBannerBox(u8 boxId);
+
+/**
+ * get fbox ID field
+ * @address{BPRE,080F79D8}
+ */
+POKEAGB_EXTERN u8 FBoxIdGetField(u8 fBoxId, u8 fboxArrayIndex);
+
 
 
 POKEAGB_END_DECL
