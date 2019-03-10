@@ -206,11 +206,42 @@ struct Sprite {
     /*0x43*/ u8 subpriority;
 };
 
+struct OamMatrix
+{
+    s16 a;
+    s16 b;
+    s16 c;
+    s16 d;
+};
+
+// This is used with SWI 0x0F: ObjAffineSet as src
+struct ObjAffineSrcData
+{
+    s16 xScale;
+    s16 yScale;
+    u16 rotation;
+};
+
+
 /**
  * All the objects
  * @address{BPRE,0202063C}
  */
 extern struct Sprite gSprites[64];
+
+
+/**
+ * sin table
+ * @address{BPRE,0825E074}
+ */
+extern const s16 gSineTable[256];
+
+/**
+ * Transformation matrix mirror for objects
+ * @address{BPRE,02021BCC}
+ */
+extern struct OamMatrix gOamMatrices[32];
+
 
 /**
  * @address{BPRE,08231CFC}
@@ -231,40 +262,114 @@ extern const struct Frame (*anim_image_empty)[];
 POKEAGB_EXTERN void oac_nullsub(struct Sprite* o);
 
 /**
+* @address{BPRE,08006B10}
+*/
+POKEAGB_EXTERN void ResetSpriteData(void);
+
+/**
  * @address{BPRE,08006B5C}
  */
 POKEAGB_EXTERN void AnimateSprites(void);
 
 /**
- * @address{BPRE,08006FE0}
- */
-POKEAGB_EXTERN u8 template_instanciate_reverse_search(struct Template*, s16 x, s16 y, u8 height);
-
-/**
- * @address{BPRE,08006BA8}
- */
+* @address{BPRE,08006BA8}
+*/
 POKEAGB_EXTERN void BuildOAMBuffer(void);
 
 /**
- * @address{BPRE,08006F8C}
- */
-POKEAGB_EXTERN u8 template_instanciate_forward_search(const struct Template*,
-                                                      u16 x,
-                                                      u16 y,
-                                                      u8 priority);
+* @address{BPRE,08006F8C}
+*/
+POKEAGB_EXTERN u8 CreateSprite(const struct Template*,
+    u16 x,
+    u16 y,
+    u8 priority);
 
 /**
- * @address{BPRE,080071EC}
- */
+* @address{BPRE,08006FE0}
+*/
+POKEAGB_EXTERN u8 CreateSpriteAtEnd(struct Template*, s16 x, s16 y, u8 height);
+
+/**
+* @address{BPRE,080071EC}
+*/
 POKEAGB_EXTERN u8 CreateSpriteAndAnimate(const struct Template*,
-                                                      u16 x,
-                                                      u16 y,
-                                                      u8 priority);
+    u16 x,
+    u16 y,
+    u8 priority);
+
+/**
+* Delete and free tiles
+* @address{BPRE,08007280}
+*/
+POKEAGB_EXTERN void DestroySprite(struct Sprite*);
+
+/**
+* Reset affine. This doesn't reset the rotscale tables
+* @address{BPRE,08007390}
+*/
+POKEAGB_EXTERN void ResetOamMatrices(void);
+
+/**
+ * @address{BPRE,080073BC}
+ */
+POKEAGB_EXTERN void SetOamMatrix(u8 matrixNum, u16 a, u16 b, u16 c, u16 d);
+
+/**
+* @address{BPRE,080073DC}
+*/
+POKEAGB_EXTERN void obj_delete(struct Sprite *obj);
+
+/**
+* @address{BPRE,080073F0}
+*/
+POKEAGB_EXTERN void CalcCenterToCornerVec(struct Sprite *sprite, u8 shape, u8 size, u8 affineMode);
+
+/**
+* reset rotscale entries for all
+* @address{BPRE,080077D8}
+*/
+POKEAGB_EXTERN void FreeSpriteOamMatrix(struct Sprite*);
 
 /**
  * @address{BPRE,08007804}
  */
-POKEAGB_EXTERN u8 obj_delete_and_free(struct Sprite*);
+POKEAGB_EXTERN u8 DestroySpriteAndFreeResources(struct Sprite*);
+
+/**
+* Get the gOamMatrices index for a sprite
+* @address{BPRE,08007FDC}
+*/
+POKEAGB_EXTERN void AnimateSprite(struct Sprite*);
+
+/**
+* set oam animation start
+* @address{BPRE,08007824}
+*/
+POKEAGB_EXTERN void GetSpriteMatrixNum(struct Sprite*);
+
+/**
+* set oam animation start
+* @address{BPRE,0800838C}
+*/
+POKEAGB_EXTERN void StartSpriteAnim(void);
+
+/**
+* Resets the rotscale animation for an object and starts the animation from the specified rotscale table index
+* @address{BPRE,0800843C}
+*/
+POKEAGB_EXTERN void StartSpriteAffineAnim(struct Sprite* obj, u8 table_index);
+
+/**
+* reset rotscale entries for all
+* @address{BPRE,08008560}
+*/
+POKEAGB_EXTERN void ResetAffineAnimData(void);
+
+/**
+* Picks a free oam matrix index and returns the found index
+* @address{BPRE,08008560}
+*/
+POKEAGB_EXTERN u8 AllocOamMatrix(void);
 
 /**
  * @address{BPRE,0800F078}
@@ -297,11 +402,6 @@ POKEAGB_EXTERN u16 gpu_tile_obj_tag_range_for_tag(u16 tile_tag);
 POKEAGB_EXTERN u16 FreeSpritePaletteByTag(u16 pal_tag);
 
 /**
- * @address{BPRE,08006B10}
- */
-POKEAGB_EXTERN void ResetSpriteData(void);
-
-/**
  * @address{BPRE,080087C4}
  */
 POKEAGB_EXTERN void gpu_tile_obj_tags_reset(void);
@@ -324,11 +424,6 @@ POKEAGB_EXTERN void FreeSpriteTilesByTag(u16 tag);
 POKEAGB_EXTERN u16 GetTileTagBySheet(u16 sheet);
 
 /**
- * @address{BPRE,080073DC}
- */
-POKEAGB_EXTERN void obj_delete(struct Sprite *obj);
-
-/**
  * Bouncing object. Uses private variables for control.
  * private[0] = 0 - Start object animation before bounce, 1 - Just bounce, other - disable
  * private[1] = Animation to start if private[0] == 0
@@ -339,6 +434,7 @@ POKEAGB_EXTERN void obj_delete(struct Sprite *obj);
  * @address{BPRE,08133904}
  */
 POKEAGB_EXTERN void oac_pingpong(struct Sprite*);
+
 
 /**
  * Sine wave. Used to animate bouncing objects.
@@ -369,12 +465,6 @@ POKEAGB_EXTERN s16 Sin2(u16 angle);
 POKEAGB_EXTERN s16 Cos2(u16 angle);
 
 /**
- * Reset affine. This doesn't reset the rotscale tables
- * @address{BPRE,08007390}
- */
-POKEAGB_EXTERN void affine_reset_all(void);
-
-/**
  * apply palfade for transparent objects
  * @address{BPRE,08070588}
  */
@@ -385,42 +475,6 @@ POKEAGB_EXTERN void obj_apply_bldpalfade(u32, s16, s16, s16, u32);
  * @address{BPRE,08075858}
  */
 POKEAGB_EXTERN void obj_id_set_rotscale(u8 objid, u32 pa, u32 pb, u32 pc, u32 pd);
-
-/**
- * reset rotscale entries for all
- * @address{BPRE,08008560}
- */
-POKEAGB_EXTERN void rotscale_reset(void);
-
-/**
- * Delete and free tiles
- * @address{BPRE,08007280}
- */
-POKEAGB_EXTERN void DestroySprite(struct Sprite*);
-
-/**
- * reset rotscale entries for all
- * @address{BPRE,080077D8}
- */
-POKEAGB_EXTERN void FreeSpriteOamMatrix(struct Sprite*);
-
-/**
- * Resets the rotscale animation for an object and starts the animation from the specified rotscale table index
- * @address{BPRE,0800843C}
- */
-POKEAGB_EXTERN void StartSpriteAffineAnim(struct Sprite* obj, u8 table_index);
-
-/**
- * set oam animation start
- * @address{BPRE,0800838C}
- */
-POKEAGB_EXTERN void obj_anim_image_start(void);
-
-/**
- * set oam animation start
- * @address{BPRE,08007824}
- */
-POKEAGB_EXTERN void AnimateSprite(struct Sprite*);
 
 POKEAGB_END_DECL
 
