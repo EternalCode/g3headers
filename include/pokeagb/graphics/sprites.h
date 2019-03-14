@@ -336,6 +336,11 @@ POKEAGB_EXTERN void FreeSpriteOamMatrix(struct Sprite*);
 POKEAGB_EXTERN u8 DestroySpriteAndFreeResources(struct Sprite*);
 
 /**
+ * @address{BPRE,08007C74}
+ */
+POKEAGB_EXTERN void BeginAffineAnim(struct Sprite*);
+
+/**
 * Get the gOamMatrices index for a sprite
 * @address{BPRE,08007FDC}
 */
