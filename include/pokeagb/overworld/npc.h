@@ -54,6 +54,7 @@ struct EventObject {
              u32 disableJumpLandingGroundEffect:1;
              u32 fixedPriority:1;
              u32 unk3_3:1;
+             u32 unused:4;
     /*0x04*/ u8 spriteId;
     /*0x05*/ u8 graphicsId;
     /*0x06*/ u8 animPattern;
@@ -66,7 +67,7 @@ struct EventObject {
     /*0x0C*/ struct Coords16 coords1;
     /*0x10*/ struct Coords16 currentCoords;
     /*0x14*/ struct Coords16 coords3;
-    /*0x18*/ u8 direction;
+    /*0x18*/ u8 facingDirection;
 
     /*0x19*/ union __attribute__((packed)) {
         u8 as_byte;
@@ -102,10 +103,10 @@ enum
     DIR_NORTH, // 2
     DIR_WEST, // 3
     DIR_EAST, // 4
-    DIR_SOUTHWEST,
-    DIR_SOUTHEAST,
-    DIR_NORTHWEST,
-    DIR_NORTHEAST,
+    DIR_SOUTHWEST, // 5
+    DIR_SOUTHEAST, // 6
+    DIR_NORTHWEST, // 7
+    DIR_NORTHEAST, // 8
 };
 
 // player tile transition states
@@ -184,6 +185,22 @@ extern struct EventObject gEventObjects[16];
  * @address{BPRE,08063D34}
  */
 POKEAGB_EXTERN u8 npc_half_reset_no_checks(struct EventObject* npc);
+
+
+/**
+ * @address{BPRE,0805BEB8}
+ */
+POKEAGB_EXTERN void npc_apply_direction(struct EventObject *eventObject, struct Sprite *sprite, u8 direction, u8 speed);
+
+/**
+ * @address{BPRE,08063554}
+ */
+POKEAGB_EXTERN void npc_apply_anim_looping(struct EventObject *eventObject, struct Sprite *sprite, u8 direction);
+
+/**
+ * @address{BPRE,0806DB84}
+ */
+POKEAGB_EXTERN u8 IsStaircase(u8 behavior, u8 direction);
 
 /**
  *
