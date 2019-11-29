@@ -296,6 +296,11 @@ POKEAGB_EXTERN void FieldObjectSetDirection(struct EventObject* npc, u8 directio
 POKEAGB_EXTERN void MoveCoords(u8 direction, s16 *x, s16 *y);
 
 /**
+ * @address{BPRE,0805C1AC}
+ */
+POKEAGB_EXTERN void PlayerNotOnBikeCollide(u8 direction);
+
+/**
  * Translate a local ID to an NPC state ID.
  * Map and bank are ignored if local_id != NPC_LOCAL_ID_PLAYER.
  *
