@@ -120,6 +120,17 @@ struct CompressedSpriteSheet {
     u16 tag;
 };
 
+struct SpriteSheet {
+    void* data;// uncompressed pixel data
+    u16 size;// Uncompressed size of pixel data
+    u16 tag;
+};
+
+struct SpriteFrameImage {
+    void* data;// uncompressed pixel data
+    u16 size;// Uncompressed size of pixel data
+};
+
 struct SpritePalette {
     const void* data;
     u16 tag;
@@ -394,7 +405,7 @@ POKEAGB_EXTERN void LoadCompressedSpriteSheetUsingHeap(struct CompressedSpriteSh
 /**
  * @address{BPRE,080086DC}
  */
-POKEAGB_EXTERN void gpu_tile_obj_alloc_tag_and_upload(struct CompressedSpriteSheet* tile);
+POKEAGB_EXTERN void LoadSpriteSheet(struct SpriteSheet* tile);
 
 /**
  * @address{BPRE,08008804}
@@ -480,6 +491,16 @@ POKEAGB_EXTERN void obj_apply_bldpalfade(u32, s16, s16, s16, u32);
  * @address{BPRE,08075858}
  */
 POKEAGB_EXTERN void obj_id_set_rotscale(u8 objid, u32 pa, u32 pb, u32 pc, u32 pd);
+
+/**
+ * @address{BPRE,0x8231CF0}
+ */
+extern const struct Frame (**nullframe)[];
+
+/**
+ * @address{BPRE,0x8231CFC}
+ */
+extern const struct RotscaleFrame (**nullrsf)[];
 
 POKEAGB_END_DECL
 

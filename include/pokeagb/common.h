@@ -23,6 +23,8 @@
 #error "No static assert available for this platform"
 #endif
 
+#define FPS 60
+
 /* TODO: Add more asserts to the code. */
 
 /**

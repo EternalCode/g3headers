@@ -48,27 +48,27 @@ union Color {
 /**
  * @address{BPRE,02037AB8}
  */
-struct PaletteFadeControl gPaletteFade;
+extern struct PaletteFadeControl gPaletteFade;
 
 /**
  * @address{BPRE,020371F8}
  */
-u16 gPlttBufferUnfaded[PLTT_BUFFER_SIZE];
+extern u16 gPlttBufferUnfaded[PLTT_BUFFER_SIZE];
 
 /**
  * @address{BPRE,020375F8}
  */
-u16 gPlttBufferFaded[PLTT_BUFFER_SIZE];
+extern u16 gPlttBufferFaded[PLTT_BUFFER_SIZE];
 
 /**
  * @address{BPRE,020377F8}
  */
-u16 gPlttBufferObjFaded[PLTT_BUFFER_SIZE];
+extern u16 gPlttBufferObjFaded[PLTT_BUFFER_SIZE];
 
 /**
  * @address{BPRE,020373F8}
  */
-u16 gPlttBufferObjUnFaded[PLTT_BUFFER_SIZE];
+extern u16 gPlttBufferObjUnFaded[PLTT_BUFFER_SIZE];
 
 /**
  * @address{BPRE,08150408}
@@ -78,7 +78,7 @@ POKEAGB_EXTERN u8* stdpal_get(u8 id);
 /**
  * @address{BPRE,03003E58}
  */
-u8* gpu_pal_tag_search_lower_boundary;
+extern u8* gpu_pal_tag_search_lower_boundary;
 
 /**
  * @address{BPRE,080703EC}
@@ -129,7 +129,18 @@ POKEAGB_EXTERN void process_palfade(void);
 /**
  * @address{BPRE,080088F0}
  */
-POKEAGB_EXTERN void gpu_pal_allocator_reset(void);
+POKEAGB_EXTERN void FreeAllSpritePalettes(void);
+
+/**
+ * @address{BPRE,08008928}
+ */
+POKEAGB_EXTERN void LoadSpritePalette(void);
+
+/**
+ * @address{BPRE,080089B8}
+ */
+POKEAGB_EXTERN u8 AllocSpritePalette(u16 tag);
+
 
 /**
  * @address{BPRE,0807DC00}
