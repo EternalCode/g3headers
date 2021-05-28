@@ -13,6 +13,7 @@
 POKEAGB_BEGIN_DECL
 
 struct ScriptEnvironment;
+#define ScriptReadByte(ctx) (*(ctx->pointer_script++))
 
 /**
  * @return 0 to indicate succcess, 1 to enter wait state.
@@ -113,6 +114,13 @@ ASSERT_SIZEOF(struct ScriptEnvironment, 0x78);
  * @address{BPRE,03000EB0}
  */
 extern struct ScriptEnvironment script_env_1;
+
+/**
+ * status on ctx 1
+ *
+ * @address{BPRE,03000EA8}
+ */
+extern u8 sScriptContext1Status;
 
 /**
  * Secondary script environment for level scripts.
@@ -258,12 +266,6 @@ extern u8 gPartyCount;
 
 /**
  * Read the value in a script variable
- * @address{BPRE,0806E568}
- */
-POKEAGB_EXTERN u16 VarGet(u16 variable);
-
-/**
- * Read the value in a script variable
  * @address{BPRE,0806E454}
  */
 POKEAGB_EXTERN u16* OldGetVarPointer(u16 variable);
@@ -328,6 +330,18 @@ POKEAGB_EXTERN u8 *OldGetFlagPointer(u16 id);
  */
 POKEAGB_EXTERN bool script_env_2_is_enabled(void);
 
+/**
+ * Read halfword paramater from script context
+ * @address{BPRE,080698F8}
+ */
+POKEAGB_EXTERN u16 ScriptReadHalfword(struct ScriptEnvironment *ctx);
+
+/**
+ * Read word paramater from script context
+ * @address{BPRE,08069910}
+ */
+POKEAGB_EXTERN u32 ScriptReadWord(struct ScriptEnvironment *ctx);
+
 
 /**
  * Function holder to be executed
@@ -358,13 +372,7 @@ POKEAGB_EXTERN void select_pokemon_launch(u8, u8, u8, u8, u8, MainCallback);
  * Resume script execution after waitstate
  * @address{BPRE,08069B34}
  */
-POKEAGB_EXTERN void script_env_2_enable_and_set_ctx_running(void);
-
-/**
- * Resume script execution after waitstate
- * @address{BPRE,08069B34}
- */
-POKEAGB_EXTERN void script_env_2_enable_and_set_ctx_running(void);
+POKEAGB_EXTERN void EnableBothScriptContexts(void);
 
 /**
  * Trades Pokemon in slot indicated by var 08004, with opponent's first slot pkmn.
@@ -373,10 +381,46 @@ POKEAGB_EXTERN void script_env_2_enable_and_set_ctx_running(void);
 POKEAGB_EXTERN void trade_pokemon(void);
 
 /**
- * Trades Pokemon in slot indicated by var 08004, with opponent's first slot pkmn.
+ * Get an NPC/objects script pointer by event id.
  * @address{BPRE,0805FC38}
  */
-POKEAGB_EXTERN const u8 *GetEventObjectScriptPointerByEventObjectId(u8 eventObjectId);
+POKEAGB_EXTERN const u8 *GetObjectEventScriptPointerByObjectEventId(u8 ObjectEventId);
+
+/**
+ * Call a script and push currect into call stack
+ * @address{BPRE,080698D4}
+ */
+POKEAGB_EXTERN void ScriptCall(struct ScriptEnvironment *ctx, u8 *scriptPtr);
+
+/**
+ * Run a script on ctx 2
+ * @address{BPRE,08069B48}
+ */
+POKEAGB_EXTERN void ScriptContext2_RunNewScript(u8 *scriptPtr);
+
+/**
+ * Run a script on ctx 2
+ * @address{BPRE,08069B28}
+ */
+POKEAGB_EXTERN void ScriptContext1_Stop(void);
+
+/**
+ * Goto a script
+ * @address{BPRE,080698D0}
+ */
+POKEAGB_EXTERN void ScriptGoto(struct ScriptEnvironment *ctx, u8 *scriptPtr);
+
+/**
+ * Face player function
+ * @address{BPRE,0806B5BC}
+ */
+POKEAGB_EXTERN void ScriptNpcFacePlayer(void);
+
+/**
+ * Runs a task for the elevator scrolling multichoice
+ * @address{BPRE,080CB904}
+ */
+POKEAGB_EXTERN void Task_CreateScriptListMenu(u8 taskId);
 
 POKEAGB_END_DECL
 

@@ -11,6 +11,7 @@
 POKEAGB_BEGIN_DECL
 
 #define SPRITE_RAM 0x6010000
+#define OBJECTS_MAX 64
 
 struct Sprite;
 
@@ -40,9 +41,43 @@ struct Coords16 {
  * Tile animation frame
  */
 struct Frame {
-    u16 data;
-    u16 duration;
+    // If the sprite has an array of images, this is the array index.
+    // If the sprite has a sheet, this is the tile offset.
+    u32 imageValue:16;
+    u32 duration:6;
+    u32 hFlip:1;
+    u32 vFlip:1;
 };
+
+struct AnimLoopCmd {
+    u32 type:16;
+    u32 count:6;
+};
+
+struct AnimJumpCmd {
+    u32 type:16;
+    u32 target:6;
+};
+
+// The first halfword of this union specifies the type of command.
+// If it -2, then it is a jump command. If it is -1, then it is the end of the script.
+// Otherwise, it is the imageValue for a frame command.
+union AnimCmd {
+    s16 type;
+    struct Frame frame;
+    struct AnimLoopCmd loop;
+    struct AnimJumpCmd jump;
+};
+
+#define ANIMCMD_FRAME(...) \
+    {.frame = {__VA_ARGS__}}
+#define ANIMCMD_LOOP(_count) \
+    {.loop = {.type = -3, .count = _count}}
+#define ANIMCMD_JUMP(_target) \
+    {.jump = {.type = -2, .target = _target}}
+#define ANIMCMD_END \
+    {.type = -1}
+
 
 /**
  * Rotation/Scaling frame
@@ -58,7 +93,8 @@ struct RotscaleFrame {
 /**
  * OAM Structure
  */
-
+ #define ST_OAM_HFLIP     0x08
+ #define ST_OAM_VFLIP     0x10
 struct OamData {
     u32 y : 8;
 
@@ -143,7 +179,7 @@ struct Template {
     u16 tiles_tag;
     u16 pal_tag;
     const struct OamData* oam;
-    const struct Frame (**animation)[];
+    const union AnimCmd *const *anim;
     const struct CompressedSpriteSheet* graphics;
     const struct RotscaleFrame (**rotscale)[];
     SpriteCallback callback;
@@ -170,7 +206,7 @@ struct SubspriteTable
 
 struct Sprite {
     struct OamData final_oam;
-    struct Frame (**animation_table)[];
+    const union AnimCmd *const *anims;
     struct CompressedSpriteSheet* gfx_table;
     struct RotscaleFrame (**rotscale_table)[];
     struct Template* object_template;
@@ -238,7 +274,7 @@ struct ObjAffineSrcData
  * All the objects
  * @address{BPRE,0202063C}
  */
-extern struct Sprite gSprites[64];
+extern struct Sprite gSprites[OBJECTS_MAX];
 
 
 /**
@@ -294,6 +330,11 @@ POKEAGB_EXTERN u8 CreateSprite(const struct Template*,
     u16 x,
     u16 y,
     u8 priority);
+
+/**
+* @address{BPRE,0805FB6C}
+*/
+POKEAGB_EXTERN u8 CreateCopySpriteAt(struct Sprite * sprite, s16 x, s16 y, u8 subpriority);
 
 /**
 * @address{BPRE,08006FE0}
@@ -367,7 +408,7 @@ POKEAGB_EXTERN void GetSpriteMatrixNum(struct Sprite*);
 * set oam animation start
 * @address{BPRE,0800838C}
 */
-POKEAGB_EXTERN void StartSpriteAnim(void);
+POKEAGB_EXTERN void StartSpriteAnim(struct Sprite *sprite, u8 animNum);
 
 /**
 * Resets the rotscale animation for an object and starts the animation from the specified rotscale table index
@@ -393,11 +434,6 @@ POKEAGB_EXTERN u8 AllocOamMatrix(void);
 POKEAGB_EXTERN void LoadCompressedSpritePaletteUsingHeap(struct SpritePalette* pal);
 
 /**
- * @address{BPRE,08008928}
- */
-POKEAGB_EXTERN u8 gpu_pal_obj_alloc_tag_and_apply(struct SpritePalette* pal);
-
-/**
  * @address{BPRE,0800F034}
  */
 POKEAGB_EXTERN void LoadCompressedSpriteSheetUsingHeap(struct CompressedSpriteSheet* tile);
@@ -410,7 +446,7 @@ POKEAGB_EXTERN void LoadSpriteSheet(struct SpriteSheet* tile);
 /**
  * @address{BPRE,08008804}
  */
-POKEAGB_EXTERN u16 gpu_tile_obj_tag_range_for_tag(u16 tile_tag);
+POKEAGB_EXTERN u16 GetSpriteTileStartByTag(u16 tile_tag);
 
 /**
  * @address{BPRE,08008A30}
@@ -420,7 +456,7 @@ POKEAGB_EXTERN u16 FreeSpritePaletteByTag(u16 pal_tag);
 /**
  * @address{BPRE,080087C4}
  */
-POKEAGB_EXTERN void gpu_tile_obj_tags_reset(void);
+POKEAGB_EXTERN void FreeSpriteTileRanges(void);
 
 /**
  * @address{BPRE,080836B4}
@@ -437,7 +473,7 @@ POKEAGB_EXTERN void FreeSpriteTilesByTag(u16 tag);
 /**
  * @address{BPRE,0800885C}
  */
-POKEAGB_EXTERN u16 GetTileTagBySheet(u16 sheet);
+POKEAGB_EXTERN u16 GetSpriteTileTagByTileStart(u16 sheet);
 
 /**
  * Bouncing object. Uses private variables for control.
@@ -493,12 +529,35 @@ POKEAGB_EXTERN void obj_apply_bldpalfade(u32, s16, s16, s16, u32);
 POKEAGB_EXTERN void obj_id_set_rotscale(u8 objid, u32 pa, u32 pb, u32 pc, u32 pd);
 
 /**
- * @address{BPRE,0x8231CF0}
+ * Being animating a sprite
+ * @address{BPRE,0800786C}
+ */
+POKEAGB_EXTERN void BeginAnim(struct Sprite *sprite);
+
+/**
+ * Remove a palette if the tagged palette isn't in use
+ * @address{BPRE,08083754}
+ */
+POKEAGB_EXTERN void FieldEffectFreePaletteIfUnused(u8 paletteNum);
+
+/**
+ * @address{BPRE,08008A58}
+ */
+POKEAGB_EXTERN void SetSubspriteTables(struct Sprite *sprite, struct SubspriteTable *subspriteTables);
+
+/**
+ * @address{BPRE,080076D0}
+ */
+POKEAGB_EXTERN void RequestSpriteCopy(const u8 *src, u8 *dest, u16 size);
+
+
+/**
+ * @address{BPRE,08231CF0}
  */
 extern const struct Frame (**nullframe)[];
 
 /**
- * @address{BPRE,0x8231CFC}
+ * @address{BPRE,08231CFC}
  */
 extern const struct RotscaleFrame (**nullrsf)[];
 

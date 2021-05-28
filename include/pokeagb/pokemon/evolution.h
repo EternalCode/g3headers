@@ -107,7 +107,8 @@ struct EvolutionEntry {
     union {
         u16 raw;
         u16 level;
-        enum Item item;
+        u16 item;
+        // u16 item;
     } argument;
 
     /**

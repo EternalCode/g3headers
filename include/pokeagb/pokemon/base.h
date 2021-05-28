@@ -95,7 +95,8 @@ struct PokemonBaseStat {
     u8 catch_rate;
     u8 xp_yield;
     u16 effort_yield;
-    enum Item item[2];
+    u16 item[2];
+    // u16 item[2];
     u8 gender_ratio;
     u8 steps_to_hatch;
     u8 base_friendship;

@@ -32,7 +32,7 @@ struct TrainerPokemonBase {
     /**
      * Can be non-zero if TRAINER_PARTY_HELD_ITEM is set.
      */
-    enum Item Item;
+    u16 Item;
 };
 
 struct TrainerPokemonMoves {
@@ -58,7 +58,7 @@ struct Trainer {
     u8 sprite;
     pchar name[10];
     u16 field_E;
-    enum Item items[TRAINER_ITEM_COUNT];
+    u16 items[TRAINER_ITEM_COUNT];
     u32 field_18;
     u32 ai;
     u32 party_size;
@@ -131,7 +131,7 @@ POKEAGB_EXTERN void battle_configure_by_script(void* script_arguments);
  *
  * @address{BPRE,08081E68}
  */
-POKEAGB_EXTERN void add_task_trainer_walk(struct EventObject* npc, u8 distance);
+POKEAGB_EXTERN void add_task_trainer_walk(struct ObjectEvent* npc, u8 distance);
 
 /**
  * @address{BPRE,0808043C}
@@ -152,6 +152,12 @@ POKEAGB_EXTERN bool trainer_flag_check(u16 trainer_id);
  * @address{BPRE,08081B30}
  */
 POKEAGB_EXTERN bool CheckForTrainersWantingBattle(void);
+
+/**
+ * get trainer transition type from map
+ * @address{BPRE,0807FD90}
+ */
+POKEAGB_EXTERN u8 GetBattleTransitionTypeByMap(void);
 
 /**
  * @address{BPRE,020386AE}

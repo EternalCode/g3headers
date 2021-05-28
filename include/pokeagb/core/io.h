@@ -828,6 +828,16 @@ POKEAGB_EXTERN void interrupts_enable(enum Interrupts disable);
  */
 POKEAGB_EXTERN void interrupts_disable(enum Interrupts disable);
 
+/**
+ * @address{BPRE,08087EA4}
+ */
+POKEAGB_EXTERN void ScanlineEffect_Clear(void);
+
+/**
+ * @address{BPRE,08087E64}
+ */
+POKEAGB_EXTERN void ScanlineEffect_Stop(void);
+
 enum DMA_MODES {
 	FILL	= (1<<24),
 	COPY16	= (0<<26),

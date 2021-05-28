@@ -13,37 +13,37 @@
 /**
  * @address{BPRE,080646FC}
  */
-POKEAGB_EXTERN void an_run_any(struct EventObject *eventObject, struct Sprite *sprite, u8 direction, u8 speed);
+POKEAGB_EXTERN void an_run_any(struct ObjectEvent *ObjectEvent, struct Sprite *sprite, u8 direction, u8 speed);
 
 /**
  * @address{BPRE,08065F60}
  */
-POKEAGB_EXTERN void StartRunningAnimSlow(struct EventObject *eventObject, struct Sprite *sprite, u8 direction);
+POKEAGB_EXTERN void StartRunningAnimSlow(struct ObjectEvent *ObjectEvent, struct Sprite *sprite, u8 direction);
 
 /**
  * @address{BPRE,08064758}
  */
-POKEAGB_EXTERN void StartRunningAnim(struct EventObject *eventObject, struct Sprite *sprite, u8 direction);
+POKEAGB_EXTERN void StartRunningAnim(struct ObjectEvent *ObjectEvent, struct Sprite *sprite, u8 direction);
 
 /**
  * @address{BPRE,08064788}
  */
-POKEAGB_EXTERN bool npc_obj_ministep_stop_on_arrival(struct EventObject *eventObject, struct Sprite *sprite);
+POKEAGB_EXTERN bool npc_obj_ministep_stop_on_arrival(struct ObjectEvent *ObjectEvent, struct Sprite *sprite);
 
 /**
  * @address{BPRE,080645F4}
  */
-POKEAGB_EXTERN void FaceDirection(struct EventObject *eventObject, struct Sprite* s, u8 direction);
+POKEAGB_EXTERN void FaceDirection(struct ObjectEvent *ObjectEvent, struct Sprite* s, u8 direction);
 
 /**
  * @address{BPRE,0805FBDC}
  */
-POKEAGB_EXTERN void SetEventObjectDirection(struct EventObject *eventObject, u8 direction);
+POKEAGB_EXTERN void SetObjectEventDirection(struct ObjectEvent *ObjectEvent, u8 direction);
 
 /**
  * @address{BPRE,0805F818}
  */
-POKEAGB_EXTERN void ShiftStillEventObjectCoords(struct EventObject *eventObject);
+POKEAGB_EXTERN void ShiftStillObjectEventCoords(struct ObjectEvent *ObjectEvent);
 
 /**
  * @address{BPRE,08063440}
@@ -58,7 +58,7 @@ POKEAGB_EXTERN bool PlayerIsAnimActive(void);
 /**
  * @address{BPRE,0806359C}
  */
-POKEAGB_EXTERN void obj_npc_animation_step(struct EventObject* eventObject, struct Sprite* sprite, u8 animNum);
+POKEAGB_EXTERN void obj_npc_animation_step(struct ObjectEvent* ObjectEvent, struct Sprite* sprite, u8 animNum);
 
 /**
  *
@@ -68,9 +68,27 @@ POKEAGB_EXTERN void PlayerSetCopyableMovement(u8 copyableMovement);
 
 /**
  *
+ * @address{BPRE,08068A5C}
+ */
+POKEAGB_EXTERN void UnfreezeObjectEvents(void);
+
+/**
+ *
+ * @address{BPRE,080689F4}
+ */
+POKEAGB_EXTERN void UnfreezeObjectEvent(struct ObjectEvent *objectEvent);
+
+/**
+ *
+ * @address{BPRE,08063C70}
+ */
+POKEAGB_EXTERN bool ObjectEventIsMovementOverridden(struct ObjectEvent *objectEvent);
+
+/**
+ *
  * @address{BPRE,08063CA4}
  */
-POKEAGB_EXTERN u8 EventObjectSetHeldMovement(struct EventObject *eventObject, u8 movementActionId);
+POKEAGB_EXTERN u8 old_ObjectEventSetHeldMovement(struct ObjectEvent *ObjectEvent, u8 movementActionId);
 
 /**
  *

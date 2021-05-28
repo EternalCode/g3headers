@@ -522,6 +522,12 @@ enum Sound {
  * Play a sound effect.
  * @address{BPRE,080722CC}
  */
+POKEAGB_EXTERN void PlayBGM(enum Sound sound);
+
+/**
+ * Play a sound effect.
+ * @address{BPRE,080722CC}
+ */
 POKEAGB_EXTERN void PlaySE(enum Sound sound);
 
 /**

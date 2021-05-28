@@ -30,12 +30,17 @@ struct overworld_effects_state {
  */
 extern struct overworld_effects_state  oe_state;
 
+/**
+ * @address{BPRE,020386E0}
+ */
+extern u32 gFieldEffectArguments[8];
+
 
 /**
  * Executes oe based on state and animation id
  * @address{BPRE,08083444}
  */
-POKEAGB_EXTERN u8* oe_exec(u8 animation);
+POKEAGB_EXTERN u8* FieldEffectStart(u8 animation);
 
 
 /**

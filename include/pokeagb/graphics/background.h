@@ -11,6 +11,9 @@
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 160
 
+#define BG_ATTR_WRAPAROUND 6
+#define BG_ATTR_PRIORITY 7
+
 struct BgConfig {
 	u32 bgid : 2;
 	u32 character_base : 2;
@@ -38,6 +41,16 @@ struct mapblock_16color {
 };
 
 /**
+ * @address{BPRE,0203AB58}
+ */
+extern void* sTempTileDataBuffers[0x20];
+
+/**
+ * @address{BPRE,0203AB5C}
+ */
+extern u8 sTempTileDataBufferCursor;
+
+/**
  * @address{BPRE,0300501C}
  */
 extern u16* gBGTilemapBuffers3;
@@ -55,13 +68,22 @@ extern u16* gBGTilemapBuffers1;
 /**
  * @address{BPRE,030008E8}
  */
-extern struct BgConfig2 bg_config2[4];
+extern struct BgConfig2 sGpuBgConfigs2[4];
 
 /**
  * @address{BPRE,030008D0}
  */
-extern struct BgConfig bg_config[4];
+extern struct BgConfig sGpuBgConfigs[4];
 
+/**
+ * @address{BPRE,0800139C}
+ */
+POKEAGB_EXTERN void HideBgInternal(u8 bg);
+
+/**
+ * @address{BPRE,08001320}
+ */
+POKEAGB_EXTERN void ShowBgInternal(u8 bg);
 
 /**
  * @address{BPRE,08001618}
@@ -72,7 +94,7 @@ POKEAGB_EXTERN void gpu_tile_bg_drop_all_sets(u8);
 /**
  * @address{BPRE,0800108C}
  */
-POKEAGB_EXTERN void gpu_bg_config_set_by_serialized(u8);
+POKEAGB_EXTERN void gpu_sGpuBgConfigs_set_by_serialized(u8);
 
 
 /**
@@ -83,17 +105,22 @@ POKEAGB_EXTERN void SetBgControlAttributes(u8 bg, u8 charBaseIndex, u8 mapBaseIn
 /**
  * @address{BPRE,080019E4}
  */
-POKEAGB_EXTERN void SetBgControlAttribute(u8 bg, u8 mode, u8 value);
+POKEAGB_EXTERN void SetBgControlAttribute(u8 bg, u8 attributeId, u8 value);
+
+/**
+ * @address{BPRE,080011E4}
+ */
+POKEAGB_EXTERN u16 GetBgControlAttribute(u8 bg, u8 attributeId);
 
 /**
  * @address{BPRE,080F67B8}
  */
-POKEAGB_EXTERN void tilemaps_sync(void);
+POKEAGB_EXTERN void DoScheduledBgTilemapCopiesToVram(void);
 
 /**
  * @address{BPRE,08002008}
  */
-POKEAGB_EXTERN void* bgid_get_tilemap(u8 bgid);
+POKEAGB_EXTERN void* GetBgTilemapBuffer(u8 bgid);
 
 /**
  * @address{BPRE,0812D594}
@@ -113,27 +140,32 @@ POKEAGB_EXTERN void bgid_nullify_tilemap(u8);
 /**
  * @address{BPRE,080017D0}
  */
-POKEAGB_EXTERN u16 gpu_copy_to_tileset(u8 layer, u8* tiles, u16 size, u16 offset);
+POKEAGB_EXTERN u16 LoadBgTiles(u8 bgid, u8* tiles, u16 size, u16 destOffset);
 
 /**
  * @address{BPRE,08002040}
  */
-POKEAGB_EXTERN void gpu_copy_tilemap(u8 layer, u8* map, u16 size_or_null, u16 offset);
+POKEAGB_EXTERN void CopyToBgTilemapBuffer(u8 bgid, u8* map, u16 size_or_null, u16 offset);
 
 /**
  * @address{BPRE,080020BC}
  */
-POKEAGB_EXTERN void bgid_send_tilemap(u8 layer);
+POKEAGB_EXTERN void CopyBgTilemapBufferToVram(u8 bgid);
 
 /**
  * @address{BPRE,08001FA0}
  */
-POKEAGB_EXTERN void bgid_set_tilemap(u8 layer, u8* space);
+POKEAGB_EXTERN void SetBgTilemapBuffer(u8 bgid, u8* space);
+
+/**
+ * @address{BPRE,08001888}
+ */
+POKEAGB_EXTERN u16 LoadBgTilemap(u8 bg, const void *src, u16 size, u16 destOffset);
 
 /**
  * @address{BPRE,08001658}
  */
-POKEAGB_EXTERN void bg_vram_setup(u8 layer, const struct BgConfig* config, u8 layers);
+POKEAGB_EXTERN void bg_vram_setup(u8 bgid, const struct BgConfig* config, u8 layers);
 
 /**
  * @address{BPRE,08001658}
@@ -162,12 +194,12 @@ POKEAGB_EXTERN void HideBg(u8 layer);
 /**
  * @address{BPRE,08007320}
  */
-POKEAGB_EXTERN void gpu_sprites_upload(void);
+POKEAGB_EXTERN void LoadOam(void);
 
 /**
  * @address{BPRE,08007610}
  */
-POKEAGB_EXTERN void copy_queue_process(void);
+POKEAGB_EXTERN void ProcessSpriteCopyRequests(void);
 
 /**
  * @address{BPRE,080563F0}
@@ -187,12 +219,12 @@ POKEAGB_EXTERN void ChangeBgX(u8 bgid, s32 delta, u8 dir);
 /**
  * @address{BPRE,08001CCC}
  */
-POKEAGB_EXTERN s32 bgid_get_x_offset(u8 bgid);
+POKEAGB_EXTERN s32 GetBgX(u8 bgid);
 
 /**
  * @address{BPRE,08001E44}
  */
-POKEAGB_EXTERN s32 bgid_get_y_offset(u8 bgid);
+POKEAGB_EXTERN s32 GetBgY(u8 bgid);
 
 struct REG_BGCNT {
 	u16 priority : 2;
@@ -227,20 +259,50 @@ struct REG_BGCNT {
 extern struct REG_BGCNT BG_CNT[4];
 
 /**
+ * @address{BPRE,080F6790}
+ */
+POKEAGB_EXTERN void ClearScheduledBgCopiesToVram(void);
+
+/**
+ * @address{BPRE,080F6808}
+ */
+POKEAGB_EXTERN void ResetTempTileDataBuffers(void);
+
+/**
  * @address{BPRE,080F67A4}
  */
-POKEAGB_EXTERN void bgid_mark_for_sync(u8 bgid);
+POKEAGB_EXTERN void ScheduleBgCopyTilemapToVram(u8 bgid);
+
+/**
+ * @address{BPRE,08087F54}
+ */
+POKEAGB_EXTERN void ScanlineEffect_InitHBlankDmaTransfer(void);
+
+/**
+ * @address{BPRE,0805A5F4}
+ */
+POKEAGB_EXTERN void FieldUpdateBgTilemapScroll(void);
+
+/**
+ * @address{BPRE,0805A5F4}
+ */
+POKEAGB_EXTERN void FieldUpdateBgTilemapScroll(void);
+
+/**
+ * @address{BPRE,0806FF54}
+ */
+POKEAGB_EXTERN void TransferTilesetAnimsBuffer(void);
+
+/**
+ * @address{BPRE,080563F0}
+ */
+POKEAGB_EXTERN void CleanupOverworldTextboxesAndTilemaps(void);
 
 /**
  * BG Rotscale maybe
  * @address{BPRE,08001E80}
  */
-POKEAGB_EXTERN void rot_scale_bg(u8 bgid, u32 xpos, u32 ypos, u16 x_pos, u16 y_pos, u16 delta_x, u16 delta_y, u8 dir_maybe);
+POKEAGB_EXTERN void SetBgAffine(u8 bg, u32 srcCenterX, u32 srcCenterY, s16 dispCenterX, s16 dispCenterY, s16 scaleX, s16 scaleY, u16 rotationAngle);
 
-/**
- * BG2 Rotscale
- * @address{BPRE,08001E80}
- */
-POKEAGB_EXTERN void bg2_scale_bg(u8 bgid, u32 xposls8, u32 yposls8, u16 x_pos, u16 y_pos, u16 scale_x, u16 scale_y, u8 dir_maybe);
 
 #endif /* POKEAGB_GRAPHICS_BACKGROUND_H_ */

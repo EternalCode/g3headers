@@ -57,7 +57,7 @@ struct BattlePokemon {
   u8 level;
   u8 happiness;
   u16 max_hp;
-  enum Item held_item;
+  u16 held_item;
   pchar name[11];
   u8 field_3B;
   pchar trainer_name[8];
@@ -171,7 +171,7 @@ extern u8 bs_mode_pbs_index;
  * The item index to be displayed in messages about held item effects.
  * @address{BPRE,02023D68}
  */
-extern enum Item b_message_held_item;
+extern u16 b_message_held_item;
 
 
 /**

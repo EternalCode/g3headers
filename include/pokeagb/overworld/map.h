@@ -15,6 +15,16 @@
 
 POKEAGB_BEGIN_DECL
 
+#define METATILE_ATTRIBUTE_BEHAVIOR 0
+#define METATILE_ATTRIBUTE_TERRAIN 1
+#define METATILE_ATTRIBUTE_2 2
+#define METATILE_ATTRIBUTE_3 3
+#define METATILE_ATTRIBUTE_ENCOUNTER_TYPE 4
+#define METATILE_ATTRIBUTE_5 5
+#define METATILE_ATTRIBUTE_LAYER_TYPE 6
+#define METATILE_ATTRIBUTE_7 7
+#define METATILE_ATTRIBUTE_COUNT 8
+
 // TODO: Move this structure elsewhere.
 
 /**
@@ -186,6 +196,15 @@ struct MapData {
 #endif
 };
 
+struct MapLayout {
+    /*0x00*/ s32 width;
+    /*0x04*/ s32 height;
+    /*0x08*/ u16 *border;
+    /*0x0c*/ u16 *map;
+    /*0x10*/ struct Tileset *primaryTileset;
+    /*0x14*/ struct Tileset *secondaryTileset;
+};
+
 #ifdef VERSION_FRLG
 ASSERT_SIZEOF(struct MapData, 0x1C);
 #else
@@ -320,7 +339,8 @@ struct SignpostData {
             /**
              * Item index.
              */
-            enum Item index;
+            u16 index;
+            // u16 index;
 
             /**
              * Hidden item ID. Should be globally unique.
@@ -416,6 +436,16 @@ struct MapHeader {
 ASSERT_SIZEOF(struct MapHeader, 0x1C);
 
 
+struct CameraObject {
+    void (*callback)(struct CameraObject *);
+    u32 spriteId;
+    s32 movementSpeedX;
+    s32 movementSpeedY;
+    s32 x;
+    s32 y;
+};
+
+
 /**
  * Current map header
  * @address{BPRE,02036DFC}
@@ -423,10 +453,16 @@ ASSERT_SIZEOF(struct MapHeader, 0x1C);
  extern struct MapHeader currentmap_header;
 
 /**
- * Current map header
+ * Whether or not a tile is impassible
+ * @address{BPRE,08058D44}
+ */
+POKEAGB_EXTERN u8 MapGridGetZCoordAt(s32 x, s32 y);
+
+/**
+ * Whether or not a tile is impassible
  * @address{BPRE,08058DC4}
  */
-POKEAGB_EXTERN u8 cur_mapdata_get_middle2bit_at(s16 x, s16 y);
+POKEAGB_EXTERN u8 MapGridIsImpassableAt(s32 x, s32 y);
 
 /**
  * Fetch the map header for the given map.
@@ -446,6 +482,19 @@ POKEAGB_EXTERN u8 cur_mapdata_height_mismatch(u8 height, s16 x, s16 y);
  * @address{BPRE,080561FC}
  */
 POKEAGB_EXTERN bool MapOutside(u8 map_light);
+
+/**
+ * Warp to the set warp
+ * @address{BPRE,08055378}
+ */
+POKEAGB_EXTERN void WarpIntoMap(void);
+
+/**
+ * Sets warp0 destination
+ * Warp id is -1 if a warp id is not used
+ * @address{BPRE,0805538C}
+ */
+POKEAGB_EXTERN void SetWarpDestination(s8 mapGroup, s8 mapNum, s8 warpId, s8 x, s8 y);
 
 /**
  * @address{BPRE,08056260}
@@ -509,31 +558,47 @@ extern u8 gWildEncounterImmunitySteps;
 extern u16 gStepUpdatedFirstPokemonItemPlayer;
 
 /**
+ * Camera object
+ * @address{BPRE,03005050}
+ */
+extern struct CameraObject gFieldCamera;
+
+/**
  * @address{BPRE,08082934}
  */
 POKEAGB_EXTERN u8 get_wild_data_index_for_map(void);
 
 /**
+ * @address{BPRE,08058E48}
+ */
+POKEAGB_EXTERN u32 MapGridGetMetatileIdAt(s32 x, s32 y);
+
+/**
+ * @address{BPRE,08058F1C}
+ */
+POKEAGB_EXTERN u32 GetMetatileAttributeFromRawMetatileBehavior(u32 original, u8 bit);
+
+/**
  * @address{BPRE,08058F48}
  */
-POKEAGB_EXTERN u32 cur_mapdata_block_get_field_at(s16 x_coord, s16 y_coord, u8 unk);
+POKEAGB_EXTERN u32 MapGridGetMetatileAttributeAt(s16 x_coord, s16 y_coord, u8 unk);
 
 /**
  * @address{BPRE,0805BBA8}
  */
-POKEAGB_EXTERN u8 CheckForEventObjectCollision(struct EventObject *o, s16 x, s16 y, u8 direction, u8 behaviour);
+POKEAGB_EXTERN u8 CheckForObjectEventCollision(struct ObjectEvent *o, s16 x, s16 y, u8 direction, u8 behaviour);
 
 
 /**
  * @address{BPRE,080636AC}
  */
-POKEAGB_EXTERN u8 GetCollisionAtCoords(struct EventObject *o, s16 x, s16 y, u8 direction);
+POKEAGB_EXTERN u8 GetCollisionAtCoords(struct ObjectEvent *o, s16 x, s16 y, u8 direction);
 
 
 /**
  * @address{BPRE,08058F1C}
  */
-POKEAGB_EXTERN u32 blockinfo_get_field(u32 block_info, u8 field);
+POKEAGB_EXTERN u32 GetMetatileAttributeFromRawMetatileBehavior(u32 block_info, u8 field);
 
 
 /**
@@ -564,10 +629,15 @@ POKEAGB_EXTERN u8 MetatileBehavior_IsForcedMovementTile(u8 tilebehavior);
 POKEAGB_EXTERN s8 GetPlayerSpeed(void);
 
 
-/**
- * @address{BPRE,08069C74}
- */
-POKEAGB_EXTERN bool mapheader_run_first_tag2_script_list_match(void);
+
+struct CoordEvent {
+    s16 x, y;
+    u8 elevation;
+    u16 trigger;
+    u16 index;
+    u8 filler_A[0x2];
+    u8 *script;
+};
 
 /**
  * Look through the map header for map trigger scripts on the given position to start
@@ -611,10 +681,101 @@ POKEAGB_EXTERN void GetInFrontOfPlayerPosition(struct MapPosition* pos);
 POKEAGB_EXTERN void log_coords_relative_camera(s32* x, s32* y, u8 size_x, u8 size_y);
 
 /**
+ *
+ * @address{BPRE,0805ADD4}
+ */
+POKEAGB_EXTERN void SetCameraPanningCallback(void (*a)(void));
+
+/**
+ *
+ * @address{BPRE,0805ADF8}
+ */
+POKEAGB_EXTERN void InstallCameraPanAheadCallback(void);
+
+/**
+ *
+ * @address{BPRE,0805ADE0}
+ */
+POKEAGB_EXTERN void SetCameraPanning(s16 a, s16 b);
+
+/**
  * buffer current map name
  * @address{BPRE,080C4DF8}
  */
 POKEAGB_EXTERN u8 GetMapName(pchar* buffer, u8 MapNameID);
+
+/**
+ * set tile
+ * @address{BPRE,08058FA4}
+ */
+POKEAGB_EXTERN void MapGridSetMetatileIdAt(s32 x, s32 y, u16 metatile);
+
+/**
+ * redraw map
+ * @address{BPRE,0805A684}
+ */
+POKEAGB_EXTERN void DrawWholeMapView(void);
+
+/**
+ * Update camera
+ * @address{BPRE,0805ABB0}
+ */
+POKEAGB_EXTERN void CameraUpdate(void);
+
+/**
+ * move camera
+ * @address{BPRE,08059530}
+ */
+POKEAGB_EXTERN u8 CameraMove(s32 dx, s32 dy);
+
+
+struct FieldCameraOffset {
+    u8 xPixelOffset;
+    u8 yPixelOffset;
+    u8 xTileOffset;
+    u8 yTileOffset;
+    bool copyBGToVRAM;
+};
+
+/**
+ * move camera
+ * @address{BPRE,03000E90}
+ */
+extern struct FieldCameraOffset sFieldCameraOffset;
+
+
+/**
+ * move camera
+ * @address{BPRE,0805A5B8}
+ */
+POKEAGB_EXTERN void tilemap_move_something(struct FieldCameraOffset *cameraOffset, u32 b, u32 c);
+
+
+/**
+ * move camera
+ * @address{BPRE,0805ACB4}
+ */
+POKEAGB_EXTERN void MoveCameraAndRedrawMap(int deltaX, int deltaY);
+
+
+/**
+ * drawmap slices
+ * @address{BPRE,0805A72C}
+ */
+POKEAGB_EXTERN void RedrawMapSlicesForCameraUpdate(struct FieldCameraOffset *cameraOffset, int x, int y);
+
+/**
+ * buffer current map name
+ * @address{BPRE,08059A90}
+ */
+POKEAGB_EXTERN void apply_map_tileset1_palette(const struct MapLayout *mapLayout);
+
+
+/**
+ * buffer current map name
+ * @address{BPRE,080599C8}
+ */
+POKEAGB_EXTERN void apply_map_tileset_palette(struct Tileset const *tileset, u16 destOffset, u16 size);
 
 POKEAGB_END_DECL
 

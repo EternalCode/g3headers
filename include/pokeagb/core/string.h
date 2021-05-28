@@ -48,6 +48,29 @@ ASSERT_OFFSETOF(struct Textbox, height, 4);
 ASSERT_OFFSETOF(struct Textbox, charbase, 6);
 ASSERT_OFFSETOF(struct Textbox, pixels, 8);
 
+struct MenuAction {
+    const u8 *text;
+    union {
+        void (*void_u8)(u8);
+        u8 (*u8_void)(void);
+        pchar* label;
+    } func;
+};
+
+struct ScrollArrowsTemplate {
+    u8 firstArrowType;
+    u8 firstX;
+    u8 firstY;
+    u8 secondArrowType;
+    u8 secondX;
+    u8 secondY;
+    u16 fullyUpThreshold;
+    u16 fullyDownThreshold;
+    u16 tileTag;
+    u16 palTag;
+    u8 palNum;
+};
+
 /**
  * @address{BPRE,020204B4}
  */
@@ -55,16 +78,26 @@ extern struct Textbox rboxes[32];
 
 
 /**
- * @address{BPRE,0x0203709C}
+ * @address{BPRE,0203709C}
  */
-extern u8 box_status_and_type;
+extern u8 sMessageBoxType;
+
+/**
+ * @address{BPRE,02039988}
+ */
+extern u8 sDelay;
+
+/**
+ * @address{BPRE,02039A18}
+ */
+extern u16 sListMenuLastScrollPosition;
 
 /**
  * Clear a textbox.
  *
  * @address{BPRE,0800445C}
  */
-POKEAGB_EXTERN void rboxid_clear_pixels(u8 id, u8 offset);
+POKEAGB_EXTERN void rboxid_clear_pixels(u8 id, u8 palSlot_Color);
 
 /**
  * Update a textbox.
@@ -172,6 +205,12 @@ extern pchar string_buffer[STRING_BUFFER_SIZE];
 
 /**
  * Copies the 0xFF terminated string from source to desination.
+ * @address{BPRE,083A7294}
+ */
+extern u8* const sScriptStringVars[3];
+
+/**
+ * Copies the 0xFF terminated string from source to desination.
  * @address{BPRE,08008D84}
  */
 POKEAGB_EXTERN pchar* pstrcpy(pchar* dst, const pchar* src);
@@ -241,7 +280,7 @@ POKEAGB_EXTERN u8 rboxid_print(u8 id, u8 font, u8 x, u8 y, struct TextColor* col
  * outline a textbox
  * @address{BPRE,0810F2E8}
  */
-POKEAGB_EXTERN void rbox_outline(u8 box_id, u8, u8, u8);
+POKEAGB_EXTERN void DrawStdFrameWithCustomTileAndPalette(u8 windowId, bool copyToVram, u16 baseTileNum, u8 paletteNum);
 
 /**
  * Get the width in pixels of a string.
@@ -280,6 +319,12 @@ POKEAGB_EXTERN u8 rboxid_free(u8 id);
 /**
  *
  * @address{BPRE,080F7768}
+ */
+POKEAGB_EXTERN void box_curved(u8 rboxid, u8 player_closed);
+
+/**
+ *
+ * @address{BPRE,0815001C}
  */
 POKEAGB_EXTERN void box_curved(u8 rboxid, u8 player_closed);
 
@@ -331,6 +376,11 @@ POKEAGB_EXTERN pchar* fdecoder(pchar* dst, pchar* src);
  * @address{BPRE,08004950}
  */
 POKEAGB_EXTERN u32 rboxid_get_field(u8 rid, u8 field);
+
+/**
+ * @address{BPRE,0812E5A4}
+ */
+POKEAGB_EXTERN void AddTextPrinterParameterized4(u8 windowId, u8 fontId, u8 x, u8 y, u8 letterSpacing, u8 lineSpacing, const u8 *color, s8 speed, const u8 *str);
 
 
 /**
@@ -400,7 +450,7 @@ POKEAGB_EXTERN void PrintErrorMsgBag(u8 taskid, u8 fboxid, pchar* str, TaskCallb
  * clear tilemap data for rboxes
  * @address{BPRE,080040B8}
  */
-POKEAGB_EXTERN void CreateBannerBox(u8 boxId);
+POKEAGB_EXTERN void ClearWindowTilemap(u8 boxId);
 
 /**
  * create blue banner box
@@ -413,6 +463,111 @@ POKEAGB_EXTERN void CreateBannerBox(u8 boxId);
  * @address{BPRE,080F79D8}
  */
 POKEAGB_EXTERN u8 FBoxIdGetField(u8 fBoxId, u8 fboxArrayIndex);
+
+/**
+ * Show a message in field
+ * @address{BPRE,0806943C}
+ */
+POKEAGB_EXTERN bool ShowFieldMessage(pchar* pstr);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,080091E0}
+ */
+POKEAGB_EXTERN u8 *GetExpandedPlaceholder(u32 id);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,0809D654}
+ */
+POKEAGB_EXTERN u8 CreateTextboxFromRect(u8 left, u8 top, u8 width, u8 height);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,080F7750}
+ */
+POKEAGB_EXTERN void SetStdWindowBorderStyle(u8 windowId, bool copyToVram);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,0810FBE8}
+ */
+POKEAGB_EXTERN void MultichoiceList_PrintItems(u8 windowId, u8 fontId, u8 left, u8 top, u8 lineHeight, u8 itemCount, const struct MenuAction *strs, u8 letterSpacing, u8 lineSpacing);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,0810F7D8}
+ */
+POKEAGB_EXTERN u8 Menu_InitCursor(u8 windowId, u8 fontId, u8 left, u8 top, u8 cursorHeight, u8 numChoices, u8 initialCursorPos);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,0809CC98}
+ */
+POKEAGB_EXTERN void Task_MultichoiceMenu_HandleInput(u8 tid);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,08133A20}
+ */
+POKEAGB_EXTERN u8 AddScrollIndicatorArrowPair(struct ScrollArrowsTemplate* t, u16 * a1);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,0814FEAC}
+ */
+POKEAGB_EXTERN void TextWindow_LoadResourcesStdFrame0(u8 windowId, u16 destOffset, u8 palIdx);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,0814FEAC}
+ */
+POKEAGB_EXTERN void TextWindow_LoadResourcesStdFrame0(u8 windowId, u16 destOffset, u8 palIdx);
+
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,0814FF2C}
+ */
+POKEAGB_EXTERN void TextWindow_SetStdFrame0_WithPal(u8 windowId, u16 destOffset, u8 palIdx);
+
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,0815001C}
+ */
+POKEAGB_EXTERN void TextWindow_SetUserSelectedFrame(u8 windowId, u16 destOffset, u8 palIdx);
+
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,08150048}
+ */
+POKEAGB_EXTERN void DrawTextBorderOuter(u8 windowId, u16 tileStart, u8 palette);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,081501D0}
+ */
+POKEAGB_EXTERN void DrawTextBorderInner(u8 windowId, u16 tileNum, u8 palNum);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,0814FF98}
+ */
+POKEAGB_EXTERN void TextWindow_LoadTilesStdFrame1(u8 windowId, u16 destOffset);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,080F6EE4}
+ */
+POKEAGB_EXTERN void DrawDialogueFrame(u8 windowId, bool copyToVram);
+
+/**
+ * Get replacement string pointer
+ * @address{BPRE,08002554}
+ */
+POKEAGB_EXTERN void FillBgTilemapBufferRect(u8 bg, u16 tileNum, u8 x, u8 y, u8 width, u8 height, u8 palette);
 
 
 

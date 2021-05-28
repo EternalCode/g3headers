@@ -29,8 +29,8 @@ enum Keypad {
     KEY_LEFT = (1 << 5),
     KEY_UP = (1 << 6),
     KEY_DOWN = (1 << 7),
-    KEY_L = (1 << 8),
-    KEY_R = (1 << 9),
+    KEY_R = (1 << 8),
+    KEY_L = (1 << 9),
 
     /** Directional pad mask */
     KEY_DPAD = (KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT),

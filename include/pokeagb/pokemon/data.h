@@ -70,7 +70,8 @@ struct PokemonPPBonuses {
  */
 struct PokemonSubstructureGrowth {
     u16 species;
-    enum Item item;
+    u16 item;
+    // u16 item;
     u32 experience;
     struct PokemonPPBonuses pp_bonuses;
     u8 friendship;

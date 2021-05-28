@@ -41,13 +41,19 @@ POKEAGB_EXTERN void c1_overworld(void);
 POKEAGB_EXTERN void c2_overworld(void);
 
 /**
- * Secondary overworld callback (callback 2), return to overworld and continue scripts+music.
+ * Secondary overworld callback (callback 2), return to overworld and continue scripts + music.
  * @address{BPRE,080568C4}
  */
-POKEAGB_EXTERN void c2_return_overworld_music_scripts_cont(void);
+POKEAGB_EXTERN void CB2_ReturnToFieldContinueScript(void);
 
 /**
- * Secondary overworld callback (callback 2), return to overworld and continue scripts+music.
+ * Secondary overworld callback (callback 2), return to overworld and run map music +  scripts.
+ * @address{BPRE,080568E0}
+ */
+POKEAGB_EXTERN void CB2_ReturnToFieldContinueScriptPlayMapMusic(void);
+
+/**
+ * Secondary overworld callback (callback 2), return to overworld and continue scripts + music.
  * @address{BPRE,080567DC}
  */
 POKEAGB_EXTERN void exit_to_overworld_2_switch(void);
